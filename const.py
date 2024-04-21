@@ -1,0 +1,8 @@
+HEIGHT = 700
+WIDTH = 1040
+ACC = 0.5
+FRIC = -0.12
+FPS = 60
+START_MENU = 'start_menu'
+GAME = 'game'
+GRAVITY = 0.8
