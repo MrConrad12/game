@@ -1,5 +1,7 @@
 import pygame
+from animation import Animation
 from const import *
+from player_selection import SelectablePlayer
 level_image = {
     'Whispering Woods':'assets/panneau2.jpg',
     'Coral Reef':'assets/panneau2.jpg',
@@ -18,21 +20,22 @@ class MenuGame:
         self.home_button = self.draw_image_button('assets/home_button.png', posX = WIDTH - 60, posY= 60 )
 
         self.levels = self.load_level()
-   
+        self.player = SelectablePlayer()
     def load_level(self):
         levels = {}
+        x_offset = 60
+        y_offset = 60
+        space = 20
+        x_spacing = CARD_SIZE + space
+        y_spacing = CARD_SIZE+ space
         for i,(level, image) in enumerate(level_image.items()):
-            x_offset = 30
-            y_offset = 30
-            space = 20
-            x_spacing = CARD_SIZE + space
-            y_spacing = CARD_SIZE+ space
             row = i // 3  
             col = i % 3  
             x = x_offset + (col * x_spacing)
             y = y_offset + (row * y_spacing)
             levels[level] = self.draw_level_card(image, posX=x, posY=y)
         return levels
+    
 
     def draw_image_button(self, image_src, offsetX = 0, offsetY = 0, posX = WIDTH // 2, posY = HEIGHT //2):
         image = pygame.image.load(image_src)
@@ -60,14 +63,18 @@ class MenuGame:
         self.game.screen.blit(self.help_button['image'], self.help_button['rect'])
         self.game.screen.blit(self.exit_button['image'], self.exit_button['rect'])
         pygame.display.update()
+        
+    def draw_setting_menu():
+        pass
 
     def draw_level_menu(self):
         self.game.screen.blit(self.game.background, (0, -200))
-
         for level in self.levels:
             self.game.screen.blit(self.levels[level]['image'], self.levels[level]['rect'])
         self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
-
+        self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
+        self.game.screen.blit(self.player.image, self.player.rect)
+        self.player.update()
         pygame.display.update()
 
     def handle_button_clicks(self, mouse_pos):
@@ -78,7 +85,6 @@ class MenuGame:
                 self.game.game_state = LEVEL
             elif self.exit_button['rect'].collidepoint(mouse_pos):
                 self.game.running = False
-
-        elif self.game.game_state == GAME:
-            if self.home_button['rect'].collidepoint(mouse_pos):
-                self.game.game_state = START_MENU
+   
+        if self.home_button['rect'].collidepoint(mouse_pos):
+            self.game.game_state = START_MENU

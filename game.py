@@ -31,11 +31,11 @@ class Game:
                 self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
 
         self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=9)
+        
         player_pos = tmx_data.get_object_by_name('player')
-
         self.player = Player(self, player_pos.x, player_pos.y)
         self.group.add(self.player)
-
+        
         self.menu = MenuGame(self)
 
     def handle_events(self):
@@ -78,3 +78,8 @@ class Game:
                 self.update_and_draw_game()
             self.handle_events()
         pygame.quit()
+if __name__ =='__main__':
+   
+
+    game = Game()
+    game.run()

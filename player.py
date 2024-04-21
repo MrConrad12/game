@@ -2,27 +2,25 @@ import pygame
 from pygame.locals import *
 from pygame.math import Vector2
 from pygame.sprite import AbstractGroup
-from animation import Animation
+from animation import Animation, cubic_bezier_ease_in
 from const import ACC, FRIC, GRAVITY
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         super().__init__()
         self.double_jump = False
         self.game = game
-        self.states = {
-            'idle': 'player_idle_4',
-            'walk': 'player_walk_6',
-            'jump': 'player_jump_8',
-            'sprint': 'player_run_6',
-            'attack':'player_walk+attack_6'
-        }
-        self.animation = Animation('assets/player/', self.states, 'idle_right')
+        
+        # about player's animation
+        self.states = ['idle','walk','jump','run','walk+attack',]
+        self.animation = Animation('player', self.states, 'idle_right')
         self.state = 'idle_right'
         self.last_direction = 'right'
-
         self.image = self.animation.image
         self.rect = self.image.get_rect()
 
+        # about player's movement
         self.position = Vector2((x, y))
         self.vel = Vector2(0, 0)
         self.acc = Vector2(0, 0)
@@ -46,9 +44,9 @@ class Player(pygame.sprite.Sprite):
 
     def attack(self):
         if self.last_direction == 'right':
-            self.state = 'attack_right'
+            self.state = 'walk+attack_right'
         else:
-            self.state = 'attack_left'
+            self.state = 'walk+attack_left'
 
     def jump(self):
         if self.double_jump:
@@ -73,7 +71,7 @@ class Player(pygame.sprite.Sprite):
             self.acc.x = -ACC
             if pressed_keys[K_LSHIFT] or pressed_keys[K_RSHIFT]:
                 self.acc.x *= 1.5
-                self.state = 'sprint_left'
+                self.state = 'run_left'
             else:
                 self.state = 'walk_left'
                 self.last_direction = 'left'
@@ -81,7 +79,7 @@ class Player(pygame.sprite.Sprite):
             self.acc.x = ACC
             if pressed_keys[K_LSHIFT] or pressed_keys[K_RSHIFT]:
                 self.acc.x *= 1.5
-                self.state = 'sprint_right'
+                self.state = 'run_right'
             else:
                 self.state = 'walk_right'
                 self.last_direction = 'right'

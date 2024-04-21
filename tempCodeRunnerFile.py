@@ -1,3 +1,2 @@
 
-                sprite.touch_ground()
-            else:
+        self.running = True
