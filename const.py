@@ -1,8 +1,11 @@
 HEIGHT = 700
-WIDTH = 1040
+WIDTH = 1300
 ACC = 0.5
 FRIC = -0.12
 FPS = 60
 START_MENU = 'start_menu'
 GAME = 'game'
+LEVEL = 'level'
 GRAVITY = 0.8
+LEVEL_SELECT = "level_select"
+CARD_SIZE = 240
