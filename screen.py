@@ -1,5 +1,5 @@
 import pygame
-from animation import AnimatedButton
+from animation import AnimatedCard
 from const import *
 from player_selection import SelectablePlayer
 level_image = {
@@ -17,7 +17,7 @@ class MenuGame:
         self.help_button = self.draw_image_button('assets/help_button.png', offsetY = 80)
         self.exit_button = self.draw_image_button('assets/exit_button.png', offsetY = 160)
         self.home_button = self.draw_image_button('assets/home_button.png', posX = WIDTH - 60, posY= 60 )
-
+        self.level_selected = "Whispering Woods"
         self.levels = self.load_level()
         self.player = SelectablePlayer()
         
@@ -33,13 +33,12 @@ class MenuGame:
             col = i % 3  
             x = offsetX + (col * x_spacing)
             y = offsetY + (row * y_spacing)
-            levels[level] = AnimatedButton(self.game, image, posX=x, posY=y, offsetX=offsetX, offsetY=offsetY)
+            levels[level] = AnimatedCard(self.game, image, CARD_SIZE,posX=x, posY=y, offsetX=offsetX, offsetY=offsetY)
         return levels
 
     def draw_image_button(self, image_src, offsetX = 0, offsetY = 0, posX = WIDTH // 2, posY = HEIGHT //2):
         image = pygame.image.load(image_src)
         rect = image.get_rect()
-        print(rect)
         rect.centerx = posX + offsetX
         rect.centery = posY + offsetY
         return {'image':image, 'rect':rect}
@@ -71,6 +70,7 @@ class MenuGame:
         pygame.display.update()
 
     def handle_button_clicks(self, mouse_pos):
+        """ gestion des clique de souris """
         if self.game.game_state == START_MENU:
             if self.play_button['rect'].collidepoint(mouse_pos):
                 self.game.game_state = GAME
@@ -78,13 +78,13 @@ class MenuGame:
                 self.game.game_state = LEVEL
             elif self.exit_button['rect'].collidepoint(mouse_pos):
                 self.game.running = False
-   
         if self.home_button['rect'].collidepoint(mouse_pos):
             self.game.game_state = START_MENU
-        
-        # choose level
+            
+        # choisir le niveau
+        self.chose_level(mouse_pos=mouse_pos)
         
     def chose_level(self, mouse_pos):
         for level, bouton in self.levels.items():
-            if bouton['rect'].collidepoint(mouse_pos):
-                print(level)
+            if bouton.rect.collidepoint(mouse_pos):
+                self.level_selected = level

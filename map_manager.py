@@ -43,7 +43,8 @@ class MapManager:
             if obj.type == 'enemy':
                 self.enemies.append(None)
                 
-            if obje
+            if obj.type == "fire":
+                self.fire.append(None)
             """
     def update(self):
         self.group.update()

@@ -46,7 +46,7 @@ class Animation:
     
 
 
-class AnimatedButton:
+class AnimatedCard:
     def __init__(self, game, image_path, initial_size = CARD_SIZE, add_size = 20, offsetX = 50, offsetY = 50, posX = WIDTH // 2, posY = HEIGHT //2):
         self.game = game
         self.original_image = pygame.image.load(image_path)
@@ -72,3 +72,31 @@ class AnimatedButton:
         self.rect = self.image.get_rect(center=self.rect.center)
         self.game.screen.blit(self.image, self.rect)
 
+
+class AnimatedButton:
+    def __init__(self, game, image_path, width, height, add_size=20, offsetX=50, offsetY=50, posX=WIDTH // 2, posY=HEIGHT // 2):
+        self.game = game
+        self.original_image = pygame.image.load(image_path)
+        self.image = self.original_image.copy()  # On crée une copie de l'image originale
+        self.width = width
+        self.height = height
+        self.add_size = add_size
+        self.animation_speed = 3  # Vitesse de l'animation
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (posX + offsetX, posY + offsetY)
+
+    def update(self):
+        # Animer le changement de taille
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.rect.width < self.width + self.add_size:
+                self.rect.width += self.animation_speed
+                self.rect.height += self.animation_speed * (self.height / self.width)  # Garde le ratio de l'image
+        else:
+            if self.rect.width > self.width:
+                self.rect.width -= self.animation_speed
+                self.rect.height -= self.animation_speed * (self.height / self.width)  # Garde le ratio de l'image
+
+        # Redimensionner l'image
+        self.image = pygame.transform.scale(self.original_image, (self.rect.width, self.rect.height))
+        self.rect = self.image.get_rect(center=self.rect.center)
+        self.game.screen.blit(self.image, self.rect)
