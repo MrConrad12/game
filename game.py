@@ -1,7 +1,4 @@
-import sys
 import pygame
-import pytmx
-import pyscroll
 from const import *
 from map_manager import MapManager
 from player import Player
@@ -31,7 +28,7 @@ class Game:
                 self.menu.handle_button_clicks(mouse_pos)
            
     def run_game(self):
-        '''set up game'''
+        """charge le jeu (avec la map)"""
         self.current_map.update()
         if self.game_state == GAME:
             self.screen.blit(self.menu.home_button['image'], self.menu.home_button['rect'])

@@ -1,15 +1,7 @@
 import pygame
 import math
 
-def cubic_bezier_ease_in(t):
-    P0 = (0, 0)
-    P1 = (0.42, 0)
-    P2 = (1, 1)
-    P3 = (1, 1)
-    t *= 2 * math.pi 
-    x = P0[0] + t * (P1[0] - P0[0]) + math.pow(t, 2) * (2 * P2[0] - 2 * P1[0]) + math.pow(t, 3) * (P3[0] - 3 * P2[0] + 3 * P1[0] - P0[0])
-    #y = P0[1] + t * (P1[1] - P0[1]) + math.pow(t, 2) * (2 * P2[1] - 2 * P1[1]) + math.pow(t, 3) * (P3[1] - 3 * P2[1] + 3 * P1[1] - P0[1])
-    return x if math.sin(t) > 0 else 1 - x
+from const import CARD_SIZE, HEIGHT, WIDTH
 
 class Animation:
     def __init__(self, name, states, inital_state, animation_speed = 1, sprite_size = (64,64)):
@@ -52,4 +44,31 @@ class Animation:
     def get_sprites(self, state):
         return self.sprite_dic[state]
     
-    
+
+
+class AnimatedButton:
+    def __init__(self, game, image_path, initial_size = CARD_SIZE, add_size = 20, offsetX = 50, offsetY = 50, posX = WIDTH // 2, posY = HEIGHT //2):
+        self.game = game
+        self.original_image = pygame.image.load(image_path)
+        self.image = self.original_image.copy()  # On crée une copie de l'image originale
+        self.initial_size = initial_size
+        self.final_size = initial_size + add_size
+        self.current_size = initial_size
+        self.animation_speed = 3  # Vitesse de l'animation
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (posX + offsetX, posY + offsetY)
+
+    def update(self):
+        # Animer le changement de taille
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            if self.current_size < self.final_size:
+                self.current_size += self.animation_speed
+        else:
+            if self.current_size > self.initial_size:
+                self.current_size -= self.animation_speed
+
+        # Redimensionner l'image
+        self.image = pygame.transform.scale(self.original_image, (self.current_size, self.current_size))
+        self.rect = self.image.get_rect(center=self.rect.center)
+        self.game.screen.blit(self.image, self.rect)
+

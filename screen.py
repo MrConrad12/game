@@ -1,5 +1,5 @@
 import pygame
-from animation import Animation
+from animation import AnimatedButton
 from const import *
 from player_selection import SelectablePlayer
 level_image = {
@@ -11,7 +11,6 @@ level_image = {
     'Rush mode':'assets/panneau2.jpg',
 }
 class MenuGame:
-
     def __init__(self, game):
         self.game = game
         self.play_button = self.draw_image_button('assets/bouton.png')
@@ -24,31 +23,25 @@ class MenuGame:
         
     def load_level(self):
         levels = {}
-        x_offset = 60
-        y_offset = 60
+        offsetX = 60
+        offsetY = 60
         space = 20
         x_spacing = CARD_SIZE + space
         y_spacing = CARD_SIZE+ space
         for i,(level, image) in enumerate(level_image.items()):
             row = i // 3  
             col = i % 3  
-            x = x_offset + (col * x_spacing)
-            y = y_offset + (row * y_spacing)
-            levels[level] = self.draw_level_card(image, posX=x, posY=y)
+            x = offsetX + (col * x_spacing)
+            y = offsetY + (row * y_spacing)
+            levels[level] = AnimatedButton(self.game, image, posX=x, posY=y, offsetX=offsetX, offsetY=offsetY)
         return levels
 
     def draw_image_button(self, image_src, offsetX = 0, offsetY = 0, posX = WIDTH // 2, posY = HEIGHT //2):
         image = pygame.image.load(image_src)
         rect = image.get_rect()
+        print(rect)
         rect.centerx = posX + offsetX
         rect.centery = posY + offsetY
-        return {'image':image, 'rect':rect}
-
-    def draw_level_card(self, image_src, offsetX = 0, offsetY = 0, posX = WIDTH // 2, posY = HEIGHT //2):
-        image = pygame.image.load(image_src)
-        image = pygame.transform.scale(image, (CARD_SIZE, CARD_SIZE))
-        rect = image.get_rect()
-        rect.topleft = (posX + offsetX, posY + offsetY)
         return {'image':image, 'rect':rect}
 
     def draw_welcome_page(self):
@@ -70,7 +63,7 @@ class MenuGame:
     def draw_level_menu(self):
         self.game.screen.blit(self.game.background, (0, -200))
         for level in self.levels:
-            self.game.screen.blit(self.levels[level]['image'], self.levels[level]['rect'])
+            self.levels[level].update()
         self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
         self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
         self.game.screen.blit(self.player.image, self.player.rect)
@@ -83,21 +76,15 @@ class MenuGame:
                 self.game.game_state = GAME
             elif self.help_button['rect'].collidepoint(mouse_pos):
                 self.game.game_state = LEVEL
-                show_pok()
             elif self.exit_button['rect'].collidepoint(mouse_pos):
                 self.game.running = False
    
         if self.home_button['rect'].collidepoint(mouse_pos):
             self.game.game_state = START_MENU
-
-def show_pok():
-    print(mot)
-
-mot = 'voici votre pokemon'
-
-def card(IMG):
-    image = pygame.image.load('assets/panneau2')
-    rect = image.get_rect()
-    rect.centerx = WIDTH /2
-    rect.centery = HEIGHT /2
-    return {'image':image, 'rect':rect}
+        
+        # choose level
+        
+    def chose_level(self, mouse_pos):
+        for level, bouton in self.levels.items():
+            if bouton['rect'].collidepoint(mouse_pos):
+                print(level)

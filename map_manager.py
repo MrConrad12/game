@@ -8,9 +8,10 @@ class MapManager:
     def __init__(self, game, map_game='map', path_map= '../map/forest_map.tmx'):
         self.map = map_game
         self.map_path = path_map
-        self.map_zoom = 2
+        self.map_zoom = 1.5
         self.game = game
         self.walls = []
+        self.enemies = []
         self.group = None
         self.tmx_data = None
         
@@ -23,16 +24,27 @@ class MapManager:
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.game.screen.get_size())
         map_layer.zoom = self.map_zoom
         
-        # receive collision
-        for obj in self.tmx_data.objects:
-            if obj.type == 'collision':
-                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-
+        self.load_map_element()
+        
         player_pos = self.tmx_data.get_object_by_name('player')
         self.game.player = Player(self, player_pos.x, player_pos.y)
+        
         self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=5)
         self.group.add(self.game.player)
         
+    def load_map_element(self):
+         # receive collision
+        for obj in self.tmx_data.objects:
+            if obj.type == 'collision':
+                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+                
+            # add after enemy manager
+            """
+            if obj.type == 'enemy':
+                self.enemies.append(None)
+                
+            if obje
+            """
     def update(self):
         self.group.update()
         for sprite in self.group.sprites():
