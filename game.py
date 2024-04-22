@@ -3,6 +3,7 @@ import pygame
 import pytmx
 import pyscroll
 from const import *
+from map_manager import MapManager
 from player import Player
 from screen import MenuGame
 
@@ -16,26 +17,9 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Game")
         self.clock = pygame.time.Clock()
-        self.game_state = START_MENU
-
-        # Load map
-        tmx_data = pytmx.util_pygame.load_pygame('../map/forest_map.tmx')
-        map_data = pyscroll.data.TiledMapData(tmx_data)
-        map_layer = pyscroll.orthographic.BufferedRenderer(map_data, self.screen.get_size())
-        map_layer.zoom = 2
-
-        # List of collision rectangles
-        self.walls = []
-        for obj in tmx_data.objects:
-            if obj.type == 'ground':
-                self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-
-        self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=9)
-        
-        player_pos = tmx_data.get_object_by_name('player')
-        self.player = Player(self, player_pos.x, player_pos.y)
-        self.group.add(self.player)
-        
+        self.game_state = START_MENU        
+        self.current_map = MapManager(self)
+        self.current_map.load_map( 'map', '../map/forest_map.tmx')
         self.menu = MenuGame(self)
 
     def handle_events(self):
@@ -46,22 +30,11 @@ class Game:
                 mouse_pos = pygame.mouse.get_pos()
                 self.menu.handle_button_clicks(mouse_pos)
            
-    def update_and_draw_game(self):
+    def run_game(self):
         '''set up game'''
-        self.group.update()
-        # Collision detection
-        for sprite in self.group.sprites():
-            if sprite.feet.collidelist(self.walls) > -1:
-                sprite.hits = True
-                sprite.touch_ground()
-            else:
-                sprite.hits = False
-        self.group.center(self.player.rect.center)
-        self.group.draw(self.screen)
-
+        self.current_map.update()
         if self.game_state == GAME:
             self.screen.blit(self.menu.home_button['image'], self.menu.home_button['rect'])
-
         pygame.display.update()
         self.clock.tick(FPS)
 
@@ -75,11 +48,9 @@ class Game:
             elif self.game_state == LEVEL:
                 self.menu.draw_level_menu()
             elif self.game_state == GAME:
-                self.update_and_draw_game()
+                self.run_game()
             self.handle_events()
         pygame.quit()
 if __name__ =='__main__':
-   
-
     game = Game()
     game.run()

@@ -32,7 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.move()
         self.touch_ground()
         self.image = self.animation.animate(self.state)
-        pygame.draw.rect(self.game.screen, (255, 50, 0), self.feet, 2)
+        #pygame.draw.rect(self.game.screen, (255, 50, 0), self.feet, 2)
     
     def move(self):
         self.acc = Vector2(0,0 if self.hits else GRAVITY)

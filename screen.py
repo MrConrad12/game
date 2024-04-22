@@ -21,6 +21,7 @@ class MenuGame:
 
         self.levels = self.load_level()
         self.player = SelectablePlayer()
+        
     def load_level(self):
         levels = {}
         x_offset = 60
@@ -35,7 +36,6 @@ class MenuGame:
             y = y_offset + (row * y_spacing)
             levels[level] = self.draw_level_card(image, posX=x, posY=y)
         return levels
-    
 
     def draw_image_button(self, image_src, offsetX = 0, offsetY = 0, posX = WIDTH // 2, posY = HEIGHT //2):
         image = pygame.image.load(image_src)
@@ -83,8 +83,21 @@ class MenuGame:
                 self.game.game_state = GAME
             elif self.help_button['rect'].collidepoint(mouse_pos):
                 self.game.game_state = LEVEL
+                show_pok()
             elif self.exit_button['rect'].collidepoint(mouse_pos):
                 self.game.running = False
    
         if self.home_button['rect'].collidepoint(mouse_pos):
             self.game.game_state = START_MENU
+
+def show_pok():
+    print(mot)
+
+mot = 'voici votre pokemon'
+
+def card(IMG):
+    image = pygame.image.load('assets/panneau2')
+    rect = image.get_rect()
+    rect.centerx = WIDTH /2
+    rect.centery = HEIGHT /2
+    return {'image':image, 'rect':rect}
