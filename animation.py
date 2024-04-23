@@ -14,6 +14,7 @@ class Animation:
         self.image = self.sprite_dic[inital_state][0]
         self.current_sprite = 0
         self.sprite_counter = 0
+        
     def load_image(self):
         sprite_dic = {}
         for state in self.states:
@@ -32,6 +33,7 @@ class Animation:
                 sprite.set_colorkey((0, 0, 0))
                 sprites.append(sprite)
         return sprites
+    
     def animate(self, state):
         self.sprite_counter += self.animation_speed 
         if self.sprite_counter >= 10:
@@ -43,20 +45,20 @@ class Animation:
         return self.image
     def get_sprites(self, state):
         return self.sprite_dic[state]
-    
 
 
 class AnimatedCard:
-    def __init__(self, game, image_path, initial_size = CARD_SIZE, add_size = 20, offsetX = 50, offsetY = 50, posX = WIDTH // 2, posY = HEIGHT //2):
+    def __init__(self, game, image_path, initial_size = CARD_SIZE, add_size = 20, offsetX=10, offsetY=10, posX = WIDTH // 2, posY = HEIGHT //2):
         self.game = game
         self.original_image = pygame.image.load(image_path)
-        self.image = self.original_image.copy()  # On crée une copie de l'image originale
+        self.image = self.original_image.copy() 
         self.initial_size = initial_size
         self.final_size = initial_size + add_size
         self.current_size = initial_size
-        self.animation_speed = 3  # Vitesse de l'animation
+        self.animation_speed = 3 
         self.rect = self.image.get_rect()
         self.rect.topleft = (posX + offsetX, posY + offsetY)
+        self.isSelected = False
 
     def update(self):
         # Animer le changement de taille
@@ -77,11 +79,11 @@ class AnimatedButton:
     def __init__(self, game, image_path, width, height, add_size=20, offsetX=50, offsetY=50, posX=WIDTH // 2, posY=HEIGHT // 2):
         self.game = game
         self.original_image = pygame.image.load(image_path)
-        self.image = self.original_image.copy()  # On crée une copie de l'image originale
+        self.image = self.original_image.copy()  
         self.width = width
         self.height = height
         self.add_size = add_size
-        self.animation_speed = 3  # Vitesse de l'animation
+        self.animation_speed = 3 
         self.rect = self.image.get_rect()
         self.rect.topleft = (posX + offsetX, posY + offsetY)
 

@@ -11,24 +11,27 @@ player_data = {
         'lives': 3,
         'damage': 3,
         'speed': 2,
-        'jump': 2,
+        'jump': 15,
         'aptitude': 'None'
     },
     'player2':{
         'lives': 3,
         'damage': 4,
+        'jump': 15,
         'speed': 2,
         'aptitude': 'double_jump'
     },
     'player3':{
         'lives' : 3,
         'damage' : 2,
+        'jump': 15,
         'speed': 3,
         'aptitude': 'sprint'
     },
     'player4':{
         'lives' : 4,
         'damage' : 3,
+        'jump': 18,
         'speed': 1,
         'aptitude': 'swim'
     }
@@ -46,6 +49,7 @@ class Player(pygame.sprite.Sprite):
         self.lives = self.current_player['lives']
         self.damage = self.current_player['damage']
         self.speed = self.current_player['speed']
+        self.jump_value = self.current_player['jump']
         self.apptitude = self.current_player['aptitude']
     
         # equipement du joueur
@@ -81,13 +85,34 @@ class Player(pygame.sprite.Sprite):
     
     def move(self):
         """gestion des deplacements"""
-        self.acc = Vector2(0,0 if self.hits else GRAVITY)
+        self.acc = Vector2(0,-GRAVITY if self.hits else GRAVITY)
         self.key_handler()
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
         self.position += self.vel + 0.5 * self.acc
         self.rect.midbottom = self.position   
-
+        
+    def jump(self):
+        """gestion du saut et du double saut"""
+        if not self.jumping:
+            if self.double_jump:
+                self.acc.y = -self.jump_value
+                self.double_jump = False
+            else:
+                self.acc.y = -self.jump_value
+                self.double_jump = True
+            self.jumping = True
+            
+    def touch_ground(self):
+        """verification s'il touche le sol"""
+        self.rect.topleft = self.position
+        self.feet.midbottom = self.rect.midbottom
+        if self.vel.y > 0:
+            if self.hits:
+                self.vel.y = 0
+                self.jumping = False
+                self.double_jump = False
+                
     def attack(self):
         """gestion des attack"""
         if self.last_direction == 'right':
@@ -98,15 +123,8 @@ class Player(pygame.sprite.Sprite):
     def launch_projectile(self):
         self.all_projectiles.add(Projectile(self))
         
-    def jump(self):
-        """gestion du saut et du double saut"""
-        if self.double_jump:
-            self.vel.y = -15
-            self.double_jump = False
-        else:
-            self.vel.y = -15
-            self.double_jump = True
-            
+    
+                
     def ride(self, obj):
         """monter sur une monture"""
         if obj.is_readable:
@@ -118,16 +136,6 @@ class Player(pygame.sprite.Sprite):
         """descendre d'une monture"""
         self.is_riding = False
 
-    def touch_ground(self):
-        """verification s'il touche le sol"""
-        self.rect.topleft = self.position
-        self.feet.midbottom = self.rect.midbottom
-        if self.vel.y > 0:
-            if self.hits:
-                self.vel.y = 0
-                self.jumping = False
-                self.double_jump = False
-                
     def key_handler(self):
         """gestion des touches"""
         pressed_keys = pygame.key.get_pressed()

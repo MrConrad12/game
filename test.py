@@ -8,7 +8,7 @@ PATH = "assets/panneau2.jpg"
 class ImageResizeAnimation:
     def __init__(self, image_path, initial_size, final_size):
         self.original_image = pygame.image.load(image_path)
-        self.image = self.original_image.copy()  # On crée une copie de l'image originale
+        self.image = self.original_image.copy() 
         self.initial_size = initial_size
         self.final_size = final_size
         self.current_size = initial_size
@@ -44,7 +44,7 @@ def size_animation():
     BLACK = (0, 0, 0)
 
     # Créer l'objet ImageResizeAnimation
-    image_path = PATH # Remplacer "image.png" par le chemin de votre image
+    image_path = PATH
     initial_size = 100
     final_size = 120
     image_animation = ImageResizeAnimation(image_path, initial_size, final_size)
@@ -109,7 +109,7 @@ def floating_animation():
     WHITE = (255, 255, 255)
 
     # Créer l'objet ImageFloatAnimation
-    image_path = PATH  # Remplacer "image.png" par le chemin de votre image
+    image_path = PATH 
     image_animation = ImageFloatAnimation(image_path, screen_width, screen_height)
 
     clock = pygame.time.Clock()
@@ -165,7 +165,7 @@ def float_animation_static():
     WHITE = (255, 255, 255)
 
     # Créer l'objet ImageFloatAnimation
-    image_path = PATH # Remplacer "image.png" par le chemin de votre image
+    image_path = PATH 
     image_animation = ImageFloatAnimationStatic(image_path, screen_width, screen_height)
 
     clock = pygame.time.Clock()
@@ -300,12 +300,47 @@ class ImageWithText:
 
         pygame.quit()
         sys.exit()
+import pygame
+from pygame.locals import *
+from pygame.compat import unichr_
+
+class VideoManager:
+    def __init__(self, video_path, screen_width=800, screen_height=600):
+        pygame.init()
+
+        # Initialisation de la fenêtre
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
+        pygame.display.set_caption("Video Player")
+
+        # Chargement de la vidéo
+        self.video = pygame.movie.Movie(video_path)
+        self.video_screen = pygame.Surface((screen_width, screen_height))
+
+        # Démarrage de la lecture
+        self.video.set_display(self.video_screen)
+        self.video.play()
+
+    def play_video(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                    running = False
+
+            # Effacement de l'écran
+            self.screen.fill((0, 0, 0))
+
+            # Affichage de la vidéo
+            self.screen.blit(self.video_screen, (0, 0))
+
+            pygame.display.flip()
+            pygame.time.Clock().tick(30)
+
+        self.video.stop()
+        pygame.quit()
 
 # Utilisation de la classe
 if __name__ == "__main__":
-    image_path = PATH  # Remplacez "example.jpg" par le chemin de votre image
-    text = "Bonjour, Monde!"
-    font_path = FONT_PATH # Remplacez "votre_police.ttf" par le chemin de votre fichier de police
-    image_position = (100, 300)  # Position de l'image (centre)
-    app = ImageWithText(image_path, text, font_path, image_position)
-    app.run()
+    video_path = "example.mp4"  # Remplacez "example.mp4" par le chemin de votre vidéo
+    app = VideoManager(video_path)
+    app.play_video()

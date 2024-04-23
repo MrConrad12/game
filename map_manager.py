@@ -5,7 +5,7 @@ import pyscroll
 from const import *
 from player import Player
 class MapManager:
-    def __init__(self, game, map_game='map', path_map= '../map/forest_map.tmx'):
+    def __init__(self, game, map_game='map', path_map= 'map/map_industrie/map_industrie.tmx'):
         self.map = map_game
         self.map_path = path_map
         self.map_zoom = 1.5
@@ -51,6 +51,7 @@ class MapManager:
         for sprite in self.group.sprites():
             if sprite.feet.collidelist(self.walls) > -1:
                 sprite.hits = True
+                
                 sprite.touch_ground()
             else:
                 sprite.hits = False

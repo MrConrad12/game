@@ -16,7 +16,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.game_state = START_MENU        
         self.current_map = MapManager(self)
-        self.current_map.load_map( 'map', '../map/forest_map.tmx')
+        self.current_map.load_map( 'map', 'map/map_industrie/map_industrie.tmx')
         self.menu = MenuGame(self)
 
     def handle_events(self):
@@ -48,7 +48,6 @@ class Game:
                 self.run_game()
             self.handle_events()
         pygame.quit()
-        
 if __name__ =='__main__':
     game = Game()
     game.run()
