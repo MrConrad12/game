@@ -1,10 +1,9 @@
 import pygame
-import math
 
 from const import CARD_SIZE, HEIGHT, WIDTH
 
 class Animation:
-    def __init__(self, name, states, inital_state, animation_speed = 1, sprite_size = (64,64)):
+    def __init__(self, name, states, inital_state, animation_speed = 1, sprite_size = (32,32)):
         self.states = states
         self.path = f'assets/{name}/{name}'
         self.animation_speed = animation_speed

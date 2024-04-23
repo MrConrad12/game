@@ -8,7 +8,7 @@ class SelectablePlayer(pygame.sprite.Sprite):
         self.states = ['idle']
         self.name = 'player'
         self.state = 'idle_left'
-        self.animation = Animation(self.name, self.states, 'idle_left', animation_speed=.2,sprite_size=(192,192))
+        self.animation = Animation(self.name, self.states, 'idle_left', animation_speed=.6,sprite_size=(192,192))
         self.animation.path = image
         self.image = self.animation.image
         self.rect = self.image.get_rect()

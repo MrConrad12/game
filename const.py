@@ -13,4 +13,4 @@ EFFECT_SOUND = "../assets/raw/event_effects/"
 BGM_PATH = "../assets/raw/background_music/"
 FONT_PATH = "assets/font/LilitaOne-Regular.ttf"
 SELECTABLE_PLAYER_POS_X = WIDTH * 6/8 + 50
-SELECTABLE_PLAYER_POS_Y = HEIGHT / 3
+SELECTABLE_PLAYER_POS_Y = HEIGHT / 4

@@ -302,7 +302,6 @@ class ImageWithText:
         sys.exit()
 import pygame
 from pygame.locals import *
-from pygame.compat import unichr_
 
 class VideoManager:
     def __init__(self, video_path, screen_width=800, screen_height=600):
@@ -339,8 +338,187 @@ class VideoManager:
         self.video.stop()
         pygame.quit()
 
-# Utilisation de la classe
-if __name__ == "__main__":
-    video_path = "example.mp4"  # Remplacez "example.mp4" par le chemin de votre vidéo
-    app = VideoManager(video_path)
-    app.play_video()
+import pygame
+import sys
+import pygame
+import sys
+class ImageWithText:
+    def __init__(self, image_path, text_lines, image_position, font_path=None, font_size=24, font_color=(255, 255, 255)):
+        pygame.init()
+
+        # Charger l'image
+        self.image = pygame.image.load(image_path)
+        self.image_rect = self.image.get_rect(center=image_position)
+
+        # Créer la police
+        if font_path is not None:
+            self.font = pygame.font.Font(font_path, font_size)
+        else:
+            self.font = pygame.font.SysFont(None, font_size)
+
+        # Préparer les lignes de texte
+        self.text_surfaces = []
+        self.text_rects = []
+        max_width = 0
+        total_height = 0
+        for line in text_lines:
+            text_surface = self.font.render(line, True, font_color)
+            text_rect = text_surface.get_rect()
+            self.text_surfaces.append(text_surface)
+            self.text_rects.append(text_rect)
+            total_height += text_rect.height
+            if text_rect.width > max_width:
+                max_width = text_rect.width
+
+        # Positionner les textes
+        y_offset = self.image_rect.centery - total_height / 2
+        for surface, rect in zip(self.text_surfaces, self.text_rects):
+            rect.centerx = self.image_rect.centerx
+            rect.top = y_offset
+            y_offset += rect.height
+
+        # Centrer le groupe de texte par rapport à l'image
+        text_group_rect = pygame.Rect(0, 0, max_width, total_height)
+        text_group_rect.center = self.image_rect.center
+        for rect in self.text_rects:
+            rect.centerx = text_group_rect.centerx
+
+    def draw(self, screen):
+        # Dessiner l'image
+        screen.blit(self.image, self.image_rect)
+
+        # Dessiner les lignes de texte
+        for surface, rect in zip(self.text_surfaces, self.text_rects):
+            screen.blit(surface, rect.topleft)
+import pygame
+import sys
+
+# Constantes de couleur
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+
+# Constantes de jeu
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+PLAYER_SIZE = 50
+PLAYER_SPEED = 5
+PLAYER_JUMP_POWER = 14  # Puissance du saut
+GRAVITY = 0.8
+
+# Classe pour le joueur
+class Player(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.Surface((PLAYER_SIZE, PLAYER_SIZE))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+        self.vx = 0
+        self.vy = 0
+        self.on_ground = False
+
+    def update(self, keys):
+        # Gestion des déplacements
+        self.vx = 0
+        if keys[pygame.K_LEFT]:
+            self.vx = -PLAYER_SPEED
+        if keys[pygame.K_RIGHT]:
+            self.vx = PLAYER_SPEED
+
+        # Appliquer la gravité
+        if not self.on_ground:
+            self.vy += GRAVITY
+
+        # Appliquer les déplacements horizontaux
+        self.rect.x += self.vx
+
+        # Vérifier les collisions horizontales
+        self.check_collisions(self.vx, 0)
+
+        # Appliquer les déplacements verticaux
+        self.rect.y += self.vy
+
+        # Vérifier les collisions verticales
+        self.on_ground = False
+        self.check_collisions(0, self.vy)
+
+    def jump(self):
+        # Le joueur ne peut sauter que s'il est au sol
+        if self.on_ground:
+            self.vy = -PLAYER_JUMP_POWER
+
+    def check_collisions(self, dx, dy):
+        for obstacle in obstacles:
+            if self.rect.colliderect(obstacle.rect):
+                # Collision horizontale
+                if dx > 0:
+                    self.rect.right = obstacle.rect.left
+                if dx < 0:
+                    self.rect.left = obstacle.rect.right
+                # Collision verticale
+                if dy > 0:
+                    self.rect.bottom = obstacle.rect.top
+                    self.on_ground = True
+                    self.vy = 0
+                if dy < 0:
+                    self.rect.top = obstacle.rect.bottom
+                    self.vy = 0
+
+# Classe pour les obstacles
+class Obstacle(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        self.image = pygame.Surface((width, height))
+        self.image.fill(BLUE)
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (x, y)
+
+# Initialisation de Pygame
+pygame.init()
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Platformer Game")
+
+# Création des sprites
+all_sprites = pygame.sprite.Group()
+obstacles = pygame.sprite.Group()
+
+player = Player(100, SCREEN_HEIGHT - PLAYER_SIZE - 100)
+all_sprites.add(player)
+
+# Création du sol
+ground = Obstacle(0, SCREEN_HEIGHT - 50, SCREEN_WIDTH, 50)
+obstacles.add(ground)
+all_sprites.add(ground)
+
+# Création des obstacles
+obstacle1 = Obstacle(300, SCREEN_HEIGHT - 100, 100, 20)
+obstacle2 = Obstacle(500, SCREEN_HEIGHT - 300, 150, 30)
+obstacles.add(obstacle1, obstacle2)
+all_sprites.add(obstacle1, obstacle2)
+
+clock = pygame.time.Clock()
+running = True
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                player.jump()
+
+    keys = pygame.key.get_pressed()
+    player.update(keys)
+
+    # Affichage
+    screen.fill(WHITE)
+    all_sprites.draw(screen)
+    pygame.display.flip()
+
+    clock.tick(60)
+
+pygame.quit()
+sys.exit()
+

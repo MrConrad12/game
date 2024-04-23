@@ -7,17 +7,18 @@ from screen import MenuGame
 class Game:
     def __init__(self):
         pygame.init()
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.background = pygame.image.load('assets/decoration/fond1.jpg')
         self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT *1.4))
         self.welcome_background = pygame.image.load('assets/decoration/fond2.jpg')
         self.welcome_background = pygame.transform.scale(self.welcome_background, (WIDTH, HEIGHT *1.4))
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Game")
         self.clock = pygame.time.Clock()
         self.game_state = START_MENU        
         self.current_map = MapManager(self)
-        self.current_map.load_map( 'map', 'map/map_industrie/map_industrie.tmx')
+        self.current_map.load_map( 'map', 'map/air_map/air_map.tmx')
         self.menu = MenuGame(self)
+        
 
     def handle_events(self):
         for event in pygame.event.get():

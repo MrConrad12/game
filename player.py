@@ -4,6 +4,7 @@ from pygame.math import Vector2
 from pygame.sprite import AbstractGroup
 from animation import Animation
 from const import ACC, FRIC, GRAVITY
+from melee import Melee
 from projectile import Projectile
 
 player_data = {
@@ -50,10 +51,16 @@ class Player(pygame.sprite.Sprite):
         self.damage = self.current_player['damage']
         self.speed = self.current_player['speed']
         self.jump_value = self.current_player['jump']
-        self.apptitude = self.current_player['aptitude']
+        self.aptitude = self.current_player['aptitude']
     
+        # etat du joueur
+        self.current_lives = self.lives
+        self.current_attacks = self.attack
+        self.is_dead = True
+        
         # equipement du joueur
         self.all_projectiles = pygame.sprite.Group()
+        self.all_melee = pygame.sprite.Group()
 
         
         # l'animation du joueur
@@ -83,10 +90,35 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animation.animate(self.state)
         #pygame.draw.rect(self.game.screen, (255, 50, 0), self.feet, 2)
     
+    def get_damage(self):
+        if(self.current_lives > 0):
+            self.current_lives -= 1
+        else:
+            self.is_dead = True
+    
+    def get_live(self):
+        if(self.current_lives <= self.lives):
+            self.current_lives += 1
+    
+    def launch_projectile(self):
+        if(self.current_attacks > 0):
+            self.all_projectiles.add(Projectile(self))
+            self.current_attacks -= 1
+    
+    def get_projectile(self):
+        if(self.current_attacks<=self.attack):
+            self.current_attacks += 1
+            
+    def launch_melee(self):
+        self.all_melee.add(Melee(self))
+
+        
     def move(self):
         """gestion des deplacements"""
         self.acc = Vector2(0,-GRAVITY if self.hits else GRAVITY)
         self.key_handler()
+        
+        #appliquer les deplacement
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
         self.position += self.vel + 0.5 * self.acc
