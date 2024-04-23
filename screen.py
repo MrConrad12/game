@@ -3,6 +3,7 @@ from animation import AnimatedButton, AnimatedCard
 from const import *
 from map_manager import MapManager
 from player_selection import SelectablePlayer
+
 BUTTON_PATH = "assets/bouton/"
 
 level_image = {
@@ -37,9 +38,10 @@ class MenuGame:
         self.player_stat_data = [f"Live:  {player.lives}", f"Speed: {player.speed}", f"Damage: {player.damage}", f"+ {player.aptitude}"]
         self.player_stat = ImageWithTextGroup(self.game.screen, 'panneau0.png', self.player_stat_data,(SELECTABLE_PLAYER_POS_X,  SELECTABLE_PLAYER_POS_Y * 2.6), resizing=True, size=(220,200))
         self.image = ImageWithText(self.game.screen,'cadre.png', f"{player.name}", (SELECTABLE_PLAYER_POS_X,  SELECTABLE_PLAYER_POS_Y * 1.8), True, (200, 80), font_size=36)
+        self.play_button = ImageWithText(self.game.screen,'cadre.png',"PLAY", (WIDTH // 2,  HEIGHT - 50), True, (200, 80), font_size=36)
         self.player = SelectablePlayer(image="assets/selectable_player/player1")
         
-        self.chose = False
+        self.choose = False
     def load_level_boutton(self):
         """charger les boutons de selection des niveaux"""
         levels = {}
@@ -73,6 +75,7 @@ class MenuGame:
         pygame.display.update()
 
     def draw_start_menu(self):
+        
         self.game.screen.blit(self.game.background, (0, -200))
         self.game.screen.blit(self.start_button['image'], self.start_button['rect'])
         self.game.screen.blit(self.help_button['image'], self.help_button['rect'])
@@ -89,6 +92,7 @@ class MenuGame:
         self.change_right_player.update()
         self.change_left_player.update()
         self.image.draw()
+        self.play_button.draw()
         self.player_stat.draw()
         self.player.update()
         pygame.display.update()
@@ -97,23 +101,40 @@ class MenuGame:
         """ gestion des clique de souris """
         if self.game.game_state == START_MENU:
             if self.start_button['rect'].collidepoint(mouse_pos):
+                self.game.audio_manager.load_bgm_game()
                 self.game.game_state = GAME
             elif self.help_button['rect'].collidepoint(mouse_pos):
                 self.game.game_state = LEVEL
+                self.game.audio_manager.play_sound('forward_effect')
             elif self.exit_button['rect'].collidepoint(mouse_pos):
                 self.game.running = False
+                self.game.audio_manager.play_sound('close_effect')
+                pygame.time.delay(1000)  
+
         if self.home_button['rect'].collidepoint(mouse_pos):
             self.game.game_state = START_MENU
-       
+            self.game.audio_manager.play_sound('backward_effect')
+            self.game.audio_manager.load_bgm_menu()
+            
+        if self.game.game_state == LEVEL:
+            self.choose_level(mouse_pos)
+            if self.play_button.rect.collidepoint(mouse_pos):
+                self.game.audio_manager.load_bgm_game()
+                self.game.game_state = GAME
         
-    def chose_level(self, mouse_pos):
+    def choose_level(self,mouse_pos):
+        mouse_pos = pygame.mouse.get_pos()
         for level, bouton in self.levels.items():
-            if bouton.rect.collidepoint(mouse_pos) and not self.chose:
+            if bouton.rect.collidepoint(mouse_pos):
                 self.level_selected = level
-                self.level[bouton].isSelected = True
+                #self.levels[bouton].isSelected = True
+                self.game.audio_manager.play_sound('forward_effect')
+                print(level)
+                
+                
                 """self.game.current_map = MapManager(self.game)
                 self.game.current_map.load_map( 'map', 'map/forest_map/forest_map.tmx')"""
-            self.level[bouton].isSelected = False
+                #self.level[bouton].isSelected = False
 
 class ImageWithText:
     def __init__(self, screen, image_path, text, position, resizing=False, size=(100,100), font_path=FONT_PATH, font_size=22):
@@ -122,13 +143,13 @@ class ImageWithText:
         self.image = pygame.image.load(BUTTON_PATH+image_path)
         if(resizing):
             self.image = pygame.transform.scale(self.image, size)
-        self.image_rect = self.image.get_rect(center=position)
+        self.rect = self.image.get_rect(center=position)
         self.font = pygame.font.Font(font_path, font_size)
         self.text_surface = self.font.render(text, True, (255, 255, 255))
-        self.text_rect = self.text_surface.get_rect(center=self.image_rect.center)
+        self.text_rect = self.text_surface.get_rect(center=self.rect.center)
 
     def draw(self):
-        self.screen.blit(self.image, self.image_rect)
+        self.screen.blit(self.image, self.rect)
         self.screen.blit(self.text_surface, self.text_rect)
 
 class ImageWithTextGroup:
@@ -138,7 +159,7 @@ class ImageWithTextGroup:
         self.image = pygame.image.load(BUTTON_PATH+image_path)
         if(resizing):
             self.image = pygame.transform.scale(self.image, size)
-        self.image_rect = self.image.get_rect(center=position)
+        self.rect = self.image.get_rect(center=position)
         self.screen = screen
         self.font = pygame.font.Font(font_path, font_size)
 
@@ -157,21 +178,21 @@ class ImageWithTextGroup:
                 max_width = text_rect.width
 
         # Positionner les textes
-        y_offset = self.image_rect.centery - total_height / 2
+        y_offset = self.rect.centery - total_height / 2
         for surface, rect in zip(self.text_surfaces, self.text_rects):
-            rect.centerx = self.image_rect.centerx
+            rect.centerx = self.rect.centerx
             rect.top = y_offset
             y_offset += rect.height
 
         # Centrer le groupe de texte par rapport à l'image
         text_group_rect = pygame.Rect(0, 0, max_width, total_height)
-        text_group_rect.center = self.image_rect.center
+        text_group_rect.center = self.rect.center
         for rect in self.text_rects:
             rect.centerx = text_group_rect.centerx
 
     def draw(self):
         # Dessiner l'image
-        self.screen.blit(self.image, self.image_rect)
+        self.screen.blit(self.image, self.rect)
 
         # Dessiner les lignes de texte
         for surface, rect in zip(self.text_surfaces, self.text_rects):

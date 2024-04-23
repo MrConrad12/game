@@ -3,19 +3,26 @@ from const import *
 from map_manager import MapManager
 from player import Player
 from screen import MenuGame
-
+from audio_manager import AudioManager
+from pygame.mixer import *
+pygame.mixer.init()
 class Game:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        pygame.display.set_caption("Gounki")
+        self.clock = pygame.time.Clock()
+
+        # charger les images de fond pour les menus
         self.background = pygame.image.load('assets/decoration/fond1.jpg')
         self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT *1.4))
         self.welcome_background = pygame.image.load('assets/decoration/fond2.jpg')
         self.welcome_background = pygame.transform.scale(self.welcome_background, (WIDTH, HEIGHT *1.4))
-        pygame.display.set_caption("Game")
-        self.clock = pygame.time.Clock()
+        
+        
         self.game_state = START_MENU        
         self.current_map = MapManager(self)
+        self.audio_manager = AudioManager(self)
         self.current_map.load_map( 'map', 'map/forest_map/forest_map.tmx')
         self.menu = MenuGame(self)
         
@@ -29,7 +36,7 @@ class Game:
                 self.menu.handle_button_clicks(mouse_pos)
            
     def run_game(self):
-        """charge le jeu (avec la map)"""
+        """charge le jeu (avec la map)"""        
         self.current_map.update()
         if self.game_state == GAME:
             self.screen.blit(self.menu.home_button['image'], self.menu.home_button['rect'])
@@ -40,6 +47,7 @@ class Game:
         self.running = True
         self.menu.draw_welcome_page()
         pygame.time.delay(1000)  
+        self.audio_manager.load_bgm_menu()
         while self.running:
             if self.game_state == START_MENU:
                 self.menu.draw_start_menu()

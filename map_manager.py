@@ -54,5 +54,4 @@ class MapManager:
         self.group.update()
         self.group.center(self.player.rect.center)
         self.group.draw(self.game.screen)
-        for projectile in self.player.all_projectiles:
-            self.group.add(projectile)
+        

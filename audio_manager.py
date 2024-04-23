@@ -4,8 +4,8 @@ from pygame.mixer import *
 from const import BGM_PATH, EFFECT_SOUND
 
 pygame.init()
-class SoundManager:
-    def __init__(self):
+class AudioManager:
+    def __init__(self, game):
         pygame.mixer.init()
         self.sfx_volume  = 0.4
         self.music_volume  = 0.4
@@ -23,17 +23,26 @@ class SoundManager:
             "close_effect":pygame.mixer.Sound(f"{EFFECT_SOUND}close_effect.ogg"),
             "game_over_effect":pygame.mixer.Sound(f"{EFFECT_SOUND}game_over_effect.mp3"),
         }
-        for sound, load in sound_effects.items:
-            sound[load].set_volume(self.sfx_volume)
+        for sound, effect in sound_effects.items():
+            effect.set_volume(self.sfx_volume)
+            sound_effects[sound] = effect
         return sound_effects
     
     def play_sound(self, music):
-        self.sound_effects[music]
+        self.sound_effects[music].play()
         
-    def load_bgm_music(self):
+    def load_bgm_menu(self):
         """charger la music de fond"""
         music.load(self.bgm_menu)
         pygame.mixer.music.set_volume(self.music_volume)
+        music.play(loops=-1, fade_ms=1000)
+        
+    def load_bgm_game(self):
+        """charger la music de fond"""
+        music.load(self.bgm_game)
+        pygame.mixer.music.set_volume(self.music_volume)
+        music.play(loops=-1, fade_ms=1000)
+        
         
     def play_bgm(self):
         """jouer le son en arriere plan"""
