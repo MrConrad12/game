@@ -11,3 +11,4 @@ LEVEL_SELECT = "level_select"
 CARD_SIZE = 240
 EFFECT_SOUND = "../assets/raw/event_effects/"
 BGM_PATH = "../assets/raw/background_music/"
+FONT_PATH = "assets/font/LilitaOne-Regular.ttf"

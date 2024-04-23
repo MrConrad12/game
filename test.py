@@ -2,6 +2,8 @@ import math
 import random
 import pygame
 import sys
+
+from const import FONT_PATH
 PATH = "assets/panneau2.jpg" 
 class ImageResizeAnimation:
     def __init__(self, image_path, initial_size, final_size):
@@ -258,6 +260,52 @@ def main():
         pygame.display.flip()
         clock.tick(60)
 
+class ImageWithText:
+    def __init__(self, image_path, text, font_path, image_position, font_size=36):
+        pygame.init()
+
+        # Initialisation de la fenêtre
+        self.screen_width, self.screen_height = 800, 600
+        self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
+        pygame.display.set_caption("Image with Text")
+
+        # Chargement de l'image
+        self.image = pygame.image.load(image_path)
+        self.image_rect = self.image.get_rect(center=image_position)
+
+        # Chargement de la police personnalisée
+        self.font = pygame.font.Font(font_path, font_size)
+
+        # Création de la surface pour le texte
+        self.text_surface = self.font.render(text, True, (255, 255, 255))
+        self.text_rect = self.text_surface.get_rect(center=self.image_rect.center)
+
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+            # Effacement de l'écran
+            self.screen.fill((0, 0, 0))
+
+            # Affichage de l'image
+            self.screen.blit(self.image, self.image_rect)
+
+            # Affichage du texte
+            self.screen.blit(self.text_surface, self.text_rect)
+
+            pygame.display.flip()
+
+        pygame.quit()
+        sys.exit()
+
+# Utilisation de la classe
 if __name__ == "__main__":
-    print((2,1)[0]+(1,2)[0])
-    main()
+    image_path = PATH  # Remplacez "example.jpg" par le chemin de votre image
+    text = "Bonjour, Monde!"
+    font_path = FONT_PATH # Remplacez "votre_police.ttf" par le chemin de votre fichier de police
+    image_position = (100, 300)  # Position de l'image (centre)
+    app = ImageWithText(image_path, text, font_path, image_position)
+    app.run()

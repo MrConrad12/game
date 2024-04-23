@@ -48,6 +48,7 @@ class Game:
                 self.run_game()
             self.handle_events()
         pygame.quit()
+        
 if __name__ =='__main__':
     game = Game()
     game.run()

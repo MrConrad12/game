@@ -2,21 +2,24 @@ import pygame
 from animation import AnimatedCard
 from const import *
 from player_selection import SelectablePlayer
+BUTTON_PATH = "assets/bouton/"
+
 level_image = {
-    'Whispering Woods':'assets/panneau2.jpg',
-    'Coral Reef':'assets/panneau2.jpg',
-    'Skyfall Peaks':'assets/panneau2.jpg',
-    'Machine Room':'assets/panneau2.jpg',
-    'Forgotten Tower':'assets/panneau2.jpg',
-    'Rush mode':'assets/panneau2.jpg',
+    'Whispering Woods':f'{BUTTON_PATH}panneau2.jpg',
+    'Coral Reef':f'{BUTTON_PATH}panneau2.jpg',
+    'Skyfall Peaks':f'{BUTTON_PATH}panneau2.jpg',
+    'Machine Room':f'{BUTTON_PATH}panneau2.jpg',
+    'Forgotten Tower':f'{BUTTON_PATH}panneau2.jpg',
+    'Rush mode':f'{BUTTON_PATH}panneau2.jpg',
 }
 class MenuGame:
     def __init__(self, game):
         self.game = game
-        self.play_button = self.draw_image_button('assets/bouton.png')
-        self.help_button = self.draw_image_button('assets/help_button.png', offsetY = 80)
-        self.exit_button = self.draw_image_button('assets/exit_button.png', offsetY = 160)
-        self.home_button = self.draw_image_button('assets/home_button.png', posX = WIDTH - 60, posY= 60 )
+        self.play_button = self.draw_image_button(f'{BUTTON_PATH}bouton.png')
+        self.help_button = self.draw_image_button(f'{BUTTON_PATH}help_button.png', offsetY = 80)
+        self.exit_button = self.draw_image_button(f'{BUTTON_PATH}exit_button.png', offsetY = 160)
+        self.home_button = self.draw_image_button(f'{BUTTON_PATH}home_button.png', posX = WIDTH - 60, posY= 60 )
+        self.image = ImageWithText(self.game.screen,f'{BUTTON_PATH}cadre.png', "Hello World", ( WIDTH * 6/8 + 50,  HEIGHT *2/3), True, (250, 100))
         self.level_selected = "Whispering Woods"
         self.levels = self.load_level()
         self.player = SelectablePlayer()
@@ -66,6 +69,7 @@ class MenuGame:
         self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
         self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
         self.game.screen.blit(self.player.image, self.player.rect)
+        self.image.draw()
         self.player.update()
         pygame.display.update()
 
@@ -88,3 +92,20 @@ class MenuGame:
         for level, bouton in self.levels.items():
             if bouton.rect.collidepoint(mouse_pos):
                 self.level_selected = level
+class ImageWithText:
+    def __init__(self, screen, image_path, text, position, resizing=False, size=(100,100), font_path=FONT_PATH, font_size=36):
+        pygame.init()
+        self.screen = screen
+        self.image = pygame.image.load(image_path)
+        if(resizing):
+            self.image = pygame.transform.scale(self.image, size)
+        self.image_rect = self.image.get_rect(center=position)
+        self.font = pygame.font.Font(font_path, font_size)
+        self.text_surface = self.font.render(text, True, (255, 255, 255))
+        self.text_rect = self.text_surface.get_rect(center=self.image_rect.center)
+
+    def draw(self):
+        self.screen.blit(self.image, self.image_rect)
+        self.screen.blit(self.text_surface, self.text_rect)
+
+        
