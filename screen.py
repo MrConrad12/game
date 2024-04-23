@@ -1,17 +1,17 @@
 import pygame
-from animation import AnimatedCard
+from animation import AnimatedButton, AnimatedCard
 from const import *
 from map_manager import MapManager
 from player_selection import SelectablePlayer
 BUTTON_PATH = "assets/bouton/"
 
 level_image = {
-    'Whispering Woods':f'{BUTTON_PATH}panneau.png',
-    'Coral Reef':f'{BUTTON_PATH}panneau.png',
-    'Skyfall Peaks':f'{BUTTON_PATH}panneau.png',
-    'Machine Room':f'{BUTTON_PATH}panneau.png',
-    'Forgotten Tower':f'{BUTTON_PATH}panneau.png',
-    'Rush mode':f'{BUTTON_PATH}panneau.png',
+    'Whispering Woods':f'{BUTTON_PATH}5.png',
+    'Coral Reef':f'{BUTTON_PATH}3.png',
+    'Skyfall Peaks':f'{BUTTON_PATH}4.png',
+    'Machine Room':f'{BUTTON_PATH}2.png',
+    'Forgotten Tower':f'{BUTTON_PATH}1.png',
+    'Rush mode':f'{BUTTON_PATH}6.png',
 }
 class MenuGame:
     def __init__(self, game):
@@ -20,14 +20,15 @@ class MenuGame:
         player = game.current_map.player
         
         # bouton pour le menu prinipale
-        self.play_button = self.draw_image_button(f'bouton.png')
+        self.start_button = self.draw_image_button(f'bouton.png')
         self.help_button = self.draw_image_button(f'help_button.png', offsetY = 80)
         self.exit_button = self.draw_image_button(f'exit_button.png', offsetY = 160)
         self.home_button = self.draw_image_button(f'home_button.png', posX = WIDTH - 60, posY= 60 )
         
         # bouton pour les niveaux
         self.levels = self.load_level_boutton()
-        
+        self.play_button = AnimatedButton(self.game, f'{BUTTON_PATH}cadre.png', width = 80, height = 50, posY=HEIGHT - 120)
+                
         # bouton pour le personnage
         self.change_right_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_right.png', 80,posX=SELECTABLE_PLAYER_POS_X + 45, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
         self.change_left_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_left.png', 80,posX=SELECTABLE_PLAYER_POS_X - 160, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
@@ -42,19 +43,17 @@ class MenuGame:
     def load_level_boutton(self):
         """charger les boutons de selection des niveaux"""
         levels = {}
-        offsetX = 60
-        offsetY = 60
-        space = 20
+        space = 10
         x_spacing = CARD_SIZE + space
-        y_spacing = CARD_SIZE+ space
+        y_spacing = CARD_SIZE + space
         
         # gestion des espacement pour creer 2 lignes de 3 colonnes
         for i,(level, image) in enumerate(level_image.items()):
             row = i // 3  
             col = i % 3  
-            x = offsetX + (col * x_spacing)
-            y = offsetY + (row * y_spacing)
-            levels[level] = AnimatedCard(self.game, image, CARD_SIZE,posX=x, posY=y, offsetX=offsetX, offsetY=offsetY)
+            x = (col * x_spacing) - 20
+            y = (row * y_spacing) - 20
+            levels[level] = AnimatedCard(self.game, image, CARD_SIZE,posX=x, posY=y, offsetX=0, offsetY=0)
         return levels
 
     def draw_image_button(self, image_src, offsetX = 0, offsetY = 0, posX = WIDTH // 2, posY = HEIGHT //2):
@@ -66,9 +65,6 @@ class MenuGame:
      
     def draw_setting_menu(self):
         pass
-    
-    def draw_intro(self):
-        pass
 
     def draw_welcome_page(self):
         background = pygame.image.load('assets/decoration/fond2.jpg')
@@ -78,7 +74,7 @@ class MenuGame:
 
     def draw_start_menu(self):
         self.game.screen.blit(self.game.background, (0, -200))
-        self.game.screen.blit(self.play_button['image'], self.play_button['rect'])
+        self.game.screen.blit(self.start_button['image'], self.start_button['rect'])
         self.game.screen.blit(self.help_button['image'], self.help_button['rect'])
         self.game.screen.blit(self.exit_button['image'], self.exit_button['rect'])
         pygame.display.update()
@@ -92,17 +88,15 @@ class MenuGame:
         self.game.screen.blit(self.player.image, self.player.rect)
         self.change_right_player.update()
         self.change_left_player.update()
-        
         self.image.draw()
         self.player_stat.draw()
         self.player.update()
-        
         pygame.display.update()
 
     def handle_button_clicks(self, mouse_pos):
         """ gestion des clique de souris """
         if self.game.game_state == START_MENU:
-            if self.play_button['rect'].collidepoint(mouse_pos) or self.chose:
+            if self.start_button['rect'].collidepoint(mouse_pos):
                 self.game.game_state = GAME
             elif self.help_button['rect'].collidepoint(mouse_pos):
                 self.game.game_state = LEVEL
@@ -110,17 +104,16 @@ class MenuGame:
                 self.game.running = False
         if self.home_button['rect'].collidepoint(mouse_pos):
             self.game.game_state = START_MENU
-            
-        # choisir le niveau
-        self.chose_level(mouse_pos=mouse_pos)
+       
         
     def chose_level(self, mouse_pos):
         for level, bouton in self.levels.items():
-            if bouton.rect.collidepoint(mouse_pos):
+            if bouton.rect.collidepoint(mouse_pos) and not self.chose:
                 self.level_selected = level
-                self.game.current_map = MapManager(self.game)
-                self.game.current_map.load_map( 'map', 'map/air_map/air_map.tmx')
-                self.game.game_state = GAME
+                self.level[bouton].isSelected = True
+                """self.game.current_map = MapManager(self.game)
+                self.game.current_map.load_map( 'map', 'map/forest_map/forest_map.tmx')"""
+            self.level[bouton].isSelected = False
 
 class ImageWithText:
     def __init__(self, screen, image_path, text, position, resizing=False, size=(100,100), font_path=FONT_PATH, font_size=22):

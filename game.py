@@ -16,7 +16,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.game_state = START_MENU        
         self.current_map = MapManager(self)
-        self.current_map.load_map( 'map', 'map/air_map/air_map.tmx')
+        self.current_map.load_map( 'map', 'map/forest_map/forest_map.tmx')
         self.menu = MenuGame(self)
         
 

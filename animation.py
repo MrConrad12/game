@@ -3,7 +3,7 @@ import pygame
 from const import CARD_SIZE, HEIGHT, WIDTH
 
 class Animation:
-    def __init__(self, name, states, inital_state, animation_speed = 1, sprite_size = (32,32)):
+    def __init__(self, name, states, inital_state, animation_speed = 1, sprite_size = (64,64)):
         self.states = states
         self.path = f'assets/{name}/{name}'
         self.animation_speed = animation_speed
@@ -49,6 +49,7 @@ class Animation:
 class AnimatedCard:
     def __init__(self, game, image_path, initial_size = CARD_SIZE, add_size = 20, offsetX=10, offsetY=10, posX = WIDTH // 2, posY = HEIGHT //2):
         self.game = game
+       
         self.original_image = pygame.image.load(image_path)
         self.image = self.original_image.copy() 
         self.initial_size = initial_size
@@ -77,6 +78,7 @@ class AnimatedCard:
 class AnimatedButton:
     def __init__(self, game, image_path, width, height, add_size=20, offsetX=50, offsetY=50, posX=WIDTH // 2, posY=HEIGHT // 2):
         self.game = game
+        self.isSelected = False
         self.original_image = pygame.image.load(image_path)
         self.image = self.original_image.copy()  
         self.width = width
@@ -88,14 +90,15 @@ class AnimatedButton:
 
     def update(self):
         # Animer le changement de taille
-        if self.rect.collidepoint(pygame.mouse.get_pos()):
-            if self.rect.width < self.width + self.add_size:
-                self.rect.width += self.animation_speed
-                self.rect.height += self.animation_speed * (self.height / self.width)  # Garde le ratio de l'image
-        else:
-            if self.rect.width > self.width:
-                self.rect.width -= self.animation_speed
-                self.rect.height -= self.animation_speed * (self.height / self.width)  # Garde le ratio de l'image
+        if not self.isSelected:
+            if self.rect.collidepoint(pygame.mouse.get_pos()):
+                if self.rect.width < self.width + self.add_size:
+                    self.rect.width += self.animation_speed
+                    self.rect.height += self.animation_speed * (self.height / self.width)  
+            else:
+                if self.rect.width > self.width:
+                    self.rect.width -= self.animation_speed
+                    self.rect.height -= self.animation_speed * (self.height / self.width)             
 
         # Redimensionner l'image
         self.image = pygame.transform.scale(self.original_image, (self.rect.width, self.rect.height))

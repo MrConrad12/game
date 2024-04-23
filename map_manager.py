@@ -6,7 +6,7 @@ from const import *
 from player import Player
 
 class MapManager:
-    def __init__(self, game, map_game='map', path_map= 'map/air_map/air_map.tmx'):
+    def __init__(self, game, map_game='map', path_map= 'map/forest_map/forest_map.tmx'):
         self.map = map_game
         self.map_path = path_map
         self.map_zoom = 1.5
@@ -16,7 +16,7 @@ class MapManager:
         self.enemies = []
         
         self.group = None
-        self.collisions = []
+        self.collisions = pygame.sprite.Group()
         self.void = []
         self.tmx_data = None
         
@@ -34,31 +34,25 @@ class MapManager:
         # charger le joueur sur la map
         player_pos = self.tmx_data.get_object_by_name('player')
         self.player = Player(self, player_pos.x, player_pos.y)
-        
+        self.player.obstacles = self.collisions.copy()
         # charger les enemies sur la map
         self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=5)
         self.group.add(self.player)
         
     def load_map_element(self):
-        # receive collisions
-        self.load_element("collisions", self.collisions)
+        # recoit les collision
+        self.load_element("collision", self.collisions)
         self.load_element("void", self.void)
             
     def load_element(self, type, element_liste):
         for obj in self.tmx_data.objects:
             if obj.type == type:
-                element_liste.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
-    
+                obstacle = pygame.sprite.Sprite() 
+                obstacle.rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)  # Définir le rectangle de collision
+                element_liste.add(obstacle) 
     def update(self):
         self.group.update()
-        for sprite in self.group.sprites():
-            sprite.rect.topleft = sprite.position
-
-            if sprite.feet.collidelist(self.collisions) > -1:
-                sprite.hits = True
-                
-                sprite.touch_ground()
-            else:
-                sprite.hits = False
         self.group.center(self.player.rect.center)
         self.group.draw(self.game.screen)
+        for projectile in self.player.all_projectiles:
+            self.group.add(projectile)

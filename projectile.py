@@ -1,4 +1,5 @@
 import pygame
+from const import ITEM_PATH
 
 
 class Projectile(pygame.sprite.Sprite):
@@ -6,7 +7,7 @@ class Projectile(pygame.sprite.Sprite):
         super().__init__()
         self.velocity = 2
         self.player = player
-        self.projectile_path = 'Spear.png'
+        self.projectile_path = f'{ITEM_PATH}spear.png'
         self.image = pygame.image.load(self.projectile_path )
         self.image = pygame.transform.scale(self.image, (30, 30))
         self.angle = -45
@@ -30,5 +31,6 @@ class Projectile(pygame.sprite.Sprite):
             enemy.damage(self.player.attack)
         if self.rect.x > 1080:
             self.remove()
+        
     
 
