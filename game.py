@@ -5,8 +5,10 @@ from player import Player
 from screen import MenuGame
 from audio_manager import AudioManager
 from pygame.mixer import *
-
 from timer_manager import GameTimer, TimeManager
+
+
+# Defense, armes, score gagnant
 pygame.mixer.init()
 class Game:
     def __init__(self):

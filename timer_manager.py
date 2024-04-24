@@ -46,5 +46,6 @@ class GameTimer:
         time_text = self.font.render(self.get_time_string(), True, (255, 255, 255))  # Couleur blanche
         time_rect = time_text.get_rect(center=position)
         screen.blit(time_text, time_rect)
+        
     def reset(self):
         self.current_seconds = self.duration_seconds

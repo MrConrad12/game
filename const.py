@@ -19,30 +19,30 @@ PLAYER_DATA = {
     'player1':{
         'lives': 3,
         'damage': 3,
-        'speed': 1,
-        'jump': 40,
-        'aptitude': 'None'
+        'speed': 1.5,
+        'jump': 30,
+        'aptitude': 'None',
     },
     'player2':{
         'lives': 3,
-        'damage': 4,
-        'jump': 15,
+        'damage': 2,
+        'jump': 40,
         'speed': 2,
-        'aptitude': 'double_jump'
+        'aptitude': 'double_jump',
     },
     'player3':{
         'lives' : 3,
         'damage' : 2,
         'jump': 15,
         'speed': 3,
-        'aptitude': 'sprint'
+        'aptitude': 'sprint',
     },
     'player4':{
         'lives' : 4,
         'damage' : 3,
         'jump': 18,
         'speed': 1,
-        'aptitude': 'swim'
+        'aptitude': 'swim',
     }
 }
 

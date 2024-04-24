@@ -4,6 +4,7 @@ from const import CARD_SIZE, HEIGHT, WIDTH
 
 class Animation:
     def __init__(self, name, states, inital_state, animation_speed = 1, sprite_size = (64,64)):
+        """ gerer les animations des sprites """
         self.states = states
         self.path = f'assets/{name}/{name}'
         self.animation_speed = animation_speed
@@ -15,6 +16,7 @@ class Animation:
         self.sprite_counter = 0
         
     def load_image(self):
+        """ charger les images """
         sprite_dic = {}
         for state in self.states:
             for side in ['left', 'right']:
@@ -22,6 +24,7 @@ class Animation:
         return sprite_dic
     
     def load_sprites(self, sprite_type, sprite_size=(32, 32)):
+        """ charger les sprites"""
         img = pygame.image.load(f'{sprite_type}.png')
         sprites = []
         for i in range(img.get_width() // sprite_size[0]):
@@ -34,6 +37,7 @@ class Animation:
         return sprites
     
     def animate(self, state):
+        """ lancer les animations """
         self.sprite_counter += self.animation_speed 
         if self.sprite_counter >= 10:
             self.current_sprite += 1
@@ -43,11 +47,13 @@ class Animation:
             self.sprite_counter = 0
         return self.image
     def get_sprites(self, state):
+        """ recuperer les sprites """
         return self.sprite_dic[state]
 
 
 class AnimatedCard:
     def __init__(self, game, image_path, initial_size = CARD_SIZE, add_size = 20, offsetX=10, offsetY=10, posX = WIDTH // 2, posY = HEIGHT //2):
+        """ animation des cartes """
         self.game = game
         self.original_image = pygame.image.load(image_path)
         self.image = self.original_image.copy()
@@ -60,7 +66,6 @@ class AnimatedCard:
         self.isSelected = False
 
     def update(self):
-        # Animer le changement de taille
         if not self.isSelected:
             if self.rect.collidepoint(pygame.mouse.get_pos()):
                 if self.current_size < self.final_size:
@@ -78,6 +83,7 @@ class AnimatedCard:
 
 class AnimatedButton:
     def __init__(self, game, image_path, width, height, add_size=20, offsetX=50, offsetY=50, posX=WIDTH // 2, posY=HEIGHT // 2):
+    
         self.game = game
         self.isSelected = False
         self.original_image = pygame.image.load(image_path)
@@ -90,7 +96,6 @@ class AnimatedButton:
         self.rect.topleft = (posX + offsetX, posY + offsetY)
 
     def update(self):
-        # Animer le changement de taille
         if not self.isSelected:
             if self.rect.collidepoint(pygame.mouse.get_pos()):
                 if self.rect.width < self.width + self.add_size:

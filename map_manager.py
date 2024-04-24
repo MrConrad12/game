@@ -28,7 +28,6 @@ class MapManager:
         # load map
         self.map = map_game
         self.map_path = path_map
-        self.timer = GameTimer(2*100)
         
         self.tmx_data = pytmx.util_pygame.load_pygame(self.map_path)
         map_data = pyscroll.data.TiledMapData(self.tmx_data)
@@ -37,7 +36,6 @@ class MapManager:
         map_layer.zoom = self.map_zoom
         
         self.load_map_element()
-        
         # charger le joueur sur la map
         player_pos = self.tmx_data.get_object_by_name('player')
         
@@ -70,8 +68,7 @@ class MapManager:
                 obstacle.rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)  # Définir le rectangle de collision
                 element_liste.add(obstacle) 
     def update(self):
-        self.timer.update()
-        self.timer.draw(self.game.screen, (WIDTH // 2, 30))  
+        
         self.group.update()
         self.group.center(self.player.rect.center)
         self.group.draw(self.game.screen)
