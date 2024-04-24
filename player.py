@@ -44,7 +44,6 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = False
         
         self.obstacles = []
-        self.position = Vector2((x, y))
         self.vel = Vector2(0, 0)
     
         self.rect.topleft = (x, y)
@@ -101,12 +100,15 @@ class Player(pygame.sprite.Sprite):
             
     def jump(self):
         """gestion du saut et du double saut"""
-        if self.double_jump:
+        if not self.jumping : 
+            self.vel.y = -self.jump_value
+        """if self.double_jump:
             self.vel.y = -self.jump_value
             self.double_jump = False
         else:
             self.vel.y = -15
-            self.double_jump = True
+            self.double_jump = True"""
+        self.jumping = False
 
     def attack(self):
         """gestion des attack"""

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="150" height="50" tilewidth="64" tileheight="64" infinite="0" backgroundcolor="#898989" nextlayerid="12" nextobjectid="178">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="150" height="50" tilewidth="64" tileheight="64" infinite="0" backgroundcolor="#898989" nextlayerid="12" nextobjectid="191">
  <tileset firstgid="1" name="air_tileset64" tilewidth="64" tileheight="64" tilecount="198" columns="18">
   <image source="tiled_project/air_tileset64.png" width="1152" height="704"/>
   <tile id="36" probability="0"/>
@@ -373,5 +373,33 @@
   <object id="177" name="bird" type="bird" x="3008" y="1536">
    <point/>
   </object>
+  <object id="178" type="enemy" x="2360" y="1208">
+   <point/>
+  </object>
+  <object id="180" type="enemy" x="2352" y="1784">
+   <point/>
+  </object>
+  <object id="181" type="enemy" x="3992" y="2120">
+   <point/>
+  </object>
+  <object id="182" type="enemy" x="4504" y="592">
+   <point/>
+  </object>
+  <object id="183" type="enemy" x="6208" y="960">
+   <point/>
+  </object>
+  <object id="184" type="enemy" x="6576" y="1864">
+   <point/>
+  </object>
+  <object id="185" type="enemy" x="7448" y="1216">
+   <point/>
+  </object>
+  <object id="186" type="enemy" x="8672" y="1224">
+   <point/>
+  </object>
+  <object id="187" type="dead" x="-16" y="2848" width="9744" height="368"/>
+  <object id="188" type="collision" x="-72" y="-72" width="152" height="3288"/>
+  <object id="189" type="collision" x="9528" y="-16" width="144" height="3224"/>
+  <object id="190" x="-32" y="-112" width="9708" height="176"/>
  </objectgroup>
 </map>

@@ -3,13 +3,14 @@ import pygame
 import pytmx
 import pyscroll
 from const import *
+from enemy import Enemy
 from player import Player
 
 class MapManager:
     def __init__(self, game, map_game='map', path_map= 'map/forest_map/forest_map.tmx'):
         self.map = map_game
         self.map_path = path_map
-        self.map_zoom = 1.5
+        self.map_zoom = 1
         
         self.game = game
         self.player = None
@@ -24,19 +25,29 @@ class MapManager:
         # load map
         self.map = map_game
         self.map_path = path_map
+        
+        
         self.tmx_data = pytmx.util_pygame.load_pygame(self.map_path)
         map_data = pyscroll.data.TiledMapData(self.tmx_data)
         map_layer = pyscroll.orthographic.BufferedRenderer(map_data,(WIDTH, HEIGHT))
+        self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=9)
         map_layer.zoom = self.map_zoom
         
         self.load_map_element()
         
         # charger le joueur sur la map
         player_pos = self.tmx_data.get_object_by_name('player')
+        
         self.player = Player(self, player_pos.x, player_pos.y)
         self.player.obstacles = self.collisions.copy()
-        # charger les enemies sur la map
-        self.group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=5)
+        
+        ## add player
+        for obj in self.tmx_data.objects:
+            if obj.type == 'enemy':
+                enemy = Enemy(self.game, self.player, obj.x, obj.y)
+                enemy.obstacles = self.collisions.copy()
+                self.group.add(enemy)
+
         self.group.add(self.player)
         
     def load_map_element(self):

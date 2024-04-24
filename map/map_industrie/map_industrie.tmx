@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="150" height="25" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="93">
+<map version="1.8" tiledversion="1.8.4" orientation="orthogonal" renderorder="right-down" width="150" height="25" tilewidth="64" tileheight="64" infinite="0" nextlayerid="6" nextobjectid="100">
  <tileset firstgid="1" name="meca" tilewidth="64" tileheight="64" spacing="10" tilecount="60" columns="10">
   <image source="meca.jpg" trans="ffffff" width="800" height="450"/>
  </tileset>
@@ -102,8 +102,10 @@
   <object id="66" type="collision" x="6996" y="1534" width="640" height="68"/>
   <object id="67" type="collision" x="7668" y="1820"/>
   <object id="77" type="collision" x="7362" y="896" width="126" height="66"/>
-  <object id="90" type="collision" x="9460" y="508" width="128" height="322"/>
+  <object id="90" type="collision" x="9466.06" y="514.061" width="128" height="322"/>
   <object id="91" type="collision" x="8960" y="1904"/>
+  <object id="97" type="collision" x="9560.61" y="18.1818" width="42.4242" height="1578.79"/>
+  <object id="99" type="void" x="-48" y="1581.21" width="9659.03" height="35.0303"/>
  </objectgroup>
  <objectgroup id="5" name="localisation">
   <object id="68" name="player" x="133.333" y="1512.12">
@@ -112,38 +114,41 @@
   <object id="71" name="bonus" x="580" y="1524">
    <point/>
   </object>
-  <object id="73" name="items" x="1172" y="1256">
+  <object id="73" name="item" x="1172" y="1256">
    <point/>
   </object>
   <object id="74" name="bonus" x="2376" y="1056">
    <point/>
   </object>
-  <object id="75" name="ennemis" x="5688" y="1128">
+  <object id="75" name="enemy" x="5688" y="1128">
    <point/>
   </object>
-  <object id="79" name="ennemis" x="1708" y="1132">
+  <object id="79" name="enemy" x="1708" y="1132">
    <point/>
   </object>
-  <object id="80" name="items" x="4148" y="1524">
+  <object id="80" name="item" x="4148" y="1524">
    <point/>
   </object>
-  <object id="81" name="ennemis" x="4934" y="1334">
+  <object id="81" name="enemy" x="4934" y="1334">
    <point/>
   </object>
   <object id="82" name="bonus" x="6154.55" y="1284.85">
    <point/>
   </object>
-  <object id="83" name="items" x="7606" y="1082">
+  <object id="83" name="item" x="7606" y="1082">
    <point/>
   </object>
-  <object id="84" name="ennemis" x="8014" y="688">
+  <object id="84" name="enemy" x="8014" y="688">
    <point/>
   </object>
-  <object id="85" name="ennemis" x="8548" y="820">
+  <object id="85" name="enemy" x="8548" y="820">
    <point/>
   </object>
-  <object id="88" name="ennemis" x="9050" y="698">
+  <object id="88" name="enemy" x="9050" y="698">
    <point/>
   </object>
+  <object id="93" type="collision" x="-36.3636" y="0" width="54.5455" height="1600"/>
+  <object id="94" x="-509.091" y="1030.3"/>
+  <object id="96" type="collision" x="-24" y="-16" width="9656" height="32"/>
  </objectgroup>
 </map>

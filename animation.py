@@ -49,31 +49,32 @@ class Animation:
 class AnimatedCard:
     def __init__(self, game, image_path, initial_size = CARD_SIZE, add_size = 20, offsetX=10, offsetY=10, posX = WIDTH // 2, posY = HEIGHT //2):
         self.game = game
-       
         self.original_image = pygame.image.load(image_path)
-        self.image = self.original_image.copy() 
+        self.image = self.original_image.copy()
         self.initial_size = initial_size
         self.final_size = initial_size + add_size
         self.current_size = initial_size
-        self.animation_speed = 3 
+        self.animation_speed = 3
         self.rect = self.image.get_rect()
         self.rect.topleft = (posX + offsetX, posY + offsetY)
         self.isSelected = False
 
     def update(self):
         # Animer le changement de taille
-        if self.rect.collidepoint(pygame.mouse.get_pos()):
-            if self.current_size < self.final_size:
-                self.current_size += self.animation_speed
+        if not self.isSelected:
+            if self.rect.collidepoint(pygame.mouse.get_pos()):
+                if self.current_size < self.final_size:
+                    self.current_size += self.animation_speed
+            else:
+                if self.current_size > self.initial_size:
+                    self.current_size -= self.animation_speed
         else:
-            if self.current_size > self.initial_size:
-                self.current_size -= self.animation_speed
+            self.current_size = self.final_size
 
         # Redimensionner l'image
         self.image = pygame.transform.scale(self.original_image, (self.current_size, self.current_size))
         self.rect = self.image.get_rect(center=self.rect.center)
         self.game.screen.blit(self.image, self.rect)
-
 
 class AnimatedButton:
     def __init__(self, game, image_path, width, height, add_size=20, offsetX=50, offsetY=50, posX=WIDTH // 2, posY=HEIGHT // 2):

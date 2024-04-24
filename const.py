@@ -45,3 +45,31 @@ PLAYER_DATA = {
         'aptitude': 'swim'
     }
 }
+BUTTON_PATH = "assets/bouton/"
+
+LEVELS = {
+    'Whispering Woods': {
+        'image': f'{BUTTON_PATH}5.png',
+        'path': 'map/forest_map/forest_map.tmx'
+    },
+    'Coral Reef': {
+        'image': f'{BUTTON_PATH}3.png',
+        'path': 'map/forest_map/forest_map.tmx'
+    },
+    'Skyfall Peaks': {
+        'image': f'{BUTTON_PATH}4.png',
+        'path': 'map/air_map/air_map.tmx'
+    },
+    'Machine Room': {
+        'image': f'{BUTTON_PATH}2.png',
+        'path': 'map/map_industrie/map_industrie.tmx'
+    },
+    'Forgotten Tower': {
+        'image': f'{BUTTON_PATH}1.png',
+        'path': 'map/forest_map/forest_map.tmx'
+    },
+    'Rush mode': {
+        'image': f'{BUTTON_PATH}6.png',
+        'path': 'None'
+    }
+}
