@@ -25,6 +25,7 @@ import pygame
 
 class GameTimer:
     def __init__(self, duration_seconds):
+        self.time = duration_seconds
         self.duration_seconds = duration_seconds
         self.current_seconds = duration_seconds * FPS  # Convertir en nombre de frames
         self.finished = False
@@ -48,4 +49,4 @@ class GameTimer:
         screen.blit(time_text, time_rect)
         
     def reset(self):
-        self.current_seconds = self.duration_seconds
+        self.current_seconds = self.time * FPS

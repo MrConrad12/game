@@ -1,1 +1,1 @@
-objects
+GameTimer(self.play_time)

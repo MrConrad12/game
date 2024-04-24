@@ -2,7 +2,7 @@ import pygame
 from const import *
 from map_manager import MapManager
 from player import Player
-from screen import MenuGame
+from screen import ScreenGame
 from audio_manager import AudioManager
 from pygame.mixer import *
 from timer_manager import GameTimer, TimeManager
@@ -29,10 +29,9 @@ class Game:
         self.current_map = MapManager(self)
         self.audio_manager = AudioManager(self)
         self.current_map.load_map( 'map', 'map/forest_map/forest_map.tmx')
-        self.menu = MenuGame(self)
+        self.menu = ScreenGame(self)
         self.play_time = 180
         self.timer = GameTimer(self.play_time)
-        
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -42,33 +41,27 @@ class Game:
                 mouse_pos = pygame.mouse.get_pos()
                 self.menu.handle_button_clicks(mouse_pos)
            
-    def run_game(self):
+    def game(self):
         """charge le jeu (avec la map)"""      
         self.current_map.update()
-        if self.game_state == GAME:
-            self.timer.update()
-            self.timer.draw(self.screen, (WIDTH // 2, 20))
-            self.screen.blit(self.menu.home_button['image'], self.menu.home_button['rect'])
-        if self.timer.current_seconds <= 0:
-            self.game_state = START_MENU
-            
-        pygame.display.update()
-        self.clock.tick(FPS)
+        self.menu.draw_hud()
 
     def run(self):
         self.running = True
         self.menu.draw_welcome_page()
-        pygame.time.delay(1000)  
-        self.audio_manager.load_bgm_menu()
         while self.running:
             if self.game_state == START_MENU:
                 self.menu.draw_start_menu()
             elif self.game_state == LEVEL:
                 self.menu.draw_level_menu()
             elif self.game_state == GAME:
-                self.run_game()
+                self.game()
             self.handle_events()
+            pygame.display.update()
+            self.clock.tick(FPS)
+            
         pygame.quit()
+        
 if __name__ =='__main__':
     game = Game()
     game.run()

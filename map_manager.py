@@ -68,11 +68,9 @@ class MapManager:
                 obstacle.rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)  # Définir le rectangle de collision
                 element_liste.add(obstacle) 
     def update(self):
-        
         self.group.update()
         self.group.center(self.player.rect.center)
         self.group.draw(self.game.screen)
-        
         if pygame.sprite.spritecollideany(self.player, self.enemies) or pygame.sprite.spritecollideany(self.player, self.void):
             self.game.win = False
             self.game.game_state = START_MENU

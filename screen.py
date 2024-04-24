@@ -4,8 +4,9 @@ from buttons import ImageWithText, ImageWithTextGroup
 from const import *
 from map_manager import MapManager
 from player_selection import SelectablePlayer
+from timer_manager import GameTimer
 
-class MenuGame:
+class ScreenGame:
     def __init__(self, game):
         self.game = game
         self.level_selected = "Whispering Woods"
@@ -21,8 +22,8 @@ class MenuGame:
         self.play_button = AnimatedButton(self.game, f'{BUTTON_PATH}cadre.png', width = 80, height = 50, posY=HEIGHT - 120)
                 
         # bouton pour le personnage
-        #self.change_right_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_right.png', 80,posX=SELECTABLE_PLAYER_POS_X + 45, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
-        #self.change_left_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_left.png', 80,posX=SELECTABLE_PLAYER_POS_X - 160, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
+        self.change_right_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_right.png', 80,posX=SELECTABLE_PLAYER_POS_X + 45, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
+        self.change_left_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_left.png', 80,posX=SELECTABLE_PLAYER_POS_X - 160, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
         
         # statistiques
         self.player_stat_data = [f"Live:  {player.lives}", f"Speed: {player.speed}", f"Damage: {player.damage}", f"+ {player.aptitude}"]
@@ -34,6 +35,7 @@ class MenuGame:
         self.player = SelectablePlayer(image="assets/selectable_player/player1")
         
         self.choose = False
+        
     def load_level_boutton(self):
         """charger les boutons de selection des niveaux"""
         levels = {}
@@ -64,6 +66,8 @@ class MenuGame:
         background = pygame.image.load('assets/decoration/fond2.jpg')
         background = pygame.transform.scale(background, (WIDTH, HEIGHT *1.4))
         self.game.screen.blit(self.game.welcome_background, (0, -200))
+        pygame.time.delay(1000)  
+        self.game.audio_manager.load_bgm_menu()
         pygame.display.update()
 
     def draw_start_menu(self):
@@ -91,6 +95,13 @@ class MenuGame:
         self.player_stat.draw()
         self.player.update()
         pygame.display.update()
+        
+    def draw_hud(self):
+        self.game.timer.update()
+        self.game.timer.draw(self.game.screen, (WIDTH // 2, 20))
+        self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
+        if self.game.timer.current_seconds <= 0:
+            self.game_state = START_MENU
 
     def handle_button_clicks(self, mouse_pos):
         """ gestion des clique de souris """
@@ -115,6 +126,7 @@ class MenuGame:
                 self.game.timer.current_duration = 60
                 self.game.current_map.load_map( self.level_selected, LEVELS[self.level_selected]['path'])
                 self.game.audio_manager.load_bgm_game()
+                self.game.timer.reset()
                 self.game.game_state = GAME
         
         

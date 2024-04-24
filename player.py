@@ -13,6 +13,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__()
         self.double_jump = False
         self.game = game
+        
         # stat du joueur
         self.name = 'player1'
         self.current_player = PLAYER_DATA[self.name]
@@ -57,7 +58,7 @@ class Player(pygame.sprite.Sprite):
         """actualisation du joueur"""
         self.handle_input()
         self.move()
-        if self.detect_collision(self, self.void):
+        if self.detect_collision(self.void):
             self.is_dead = True
             
     def move(self):
@@ -70,18 +71,22 @@ class Player(pygame.sprite.Sprite):
         
         self.rect.x += self.vel.x + 0.5 * self.acc.x
         # Vérifier les collisions horizontales
-        self.check_collisions(self.vel.x, 0)
+        self.manage_collisions(self.vel.x, 0)
          # Appliquer les déplacements verticaux
         self.rect.y += self.vel.y + 0.5 * self.acc.y
         # Vérifier les collisions verticales
         self.on_ground = False
         
-        self.check_collisions(0, self.vel.y)
+        self.manage_collisions(0, self.vel.y)
         self.image = self.animation.animate(self.state)
-    def detect_collision(self,player, group):
-        collisions = pygame.sprite.spritecollide(player, group, False)
+        
+    def detect_collision(self, group):
+        """ detecte la collision avec les autres entités"""
+        collisions = pygame.sprite.spritecollide(self, group, False)
         return collisions
-    def check_collisions(self, dx, dy):
+    
+    def manage_collisions(self, dx, dy):
+        """ gere la collision avec les obstacles """
         for obstacle in self.obstacles:
             if self.rect.colliderect(obstacle.rect):
                 # Collision horizontale
