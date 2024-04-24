@@ -15,11 +15,11 @@ class Enemy(pygame.sprite.Sprite):
         self.velocity = 1
         self.distance = 200
         self.player = player
-        self.states = ['walk','walk+attack']
-        self.name = 'player'
+        self.states = ['walk','attack']
+        self.name = 'enemy'
         self.state = 'walk_right'
         self.animation = Animation(self.name, self.states, 'walk_right', animation_speed=.6)
-        self.animation.path = "assets/selectable_player/player1"
+        self.animation.path = "../assets/enemy"
         self.game = game
         self.image = self.animation.image
         self.rect = self.image.get_rect()
@@ -74,12 +74,12 @@ class Enemy(pygame.sprite.Sprite):
                 if self.rect.x >= self.initial_pos + self.distance:
                     self.rect.x = self.initial_pos + self.distance
                     self.direction = -1
-                    self.state = 'walk+attack_right'
+                    self.state = 'attack_right'
             else:
                 if self.rect.x <= self.initial_pos:
                     self.rect.x = self.initial_pos
                     self.direction = 1
-                    self.state = 'walk+attack_left'
+                    self.state = 'attack_left'
             """else:
                 self.state = 'idle_left'"""
         else: 

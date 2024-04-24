@@ -25,7 +25,6 @@ class Melee(pygame.sprite.Sprite):
 
     def melee(self):
         self.rect.x += self.velocity
-        # Si l'attaque se deplace de plus de 20 de pixel de sa position initial
         if self.rect.x > self.player.rect.x + 100:
             self.remove()
 

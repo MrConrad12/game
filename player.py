@@ -3,7 +3,7 @@ from pygame.locals import *
 from pygame.math import Vector2
 from pygame.sprite import AbstractGroup
 from animation import Animation
-from const import ACC, FRIC, GRAVITY, PLAYER_DATA
+from const import ACC, FRIC, GRAVITY, PLAYER_DATA, START_MENU
 from melee import Melee
 from projectile import Projectile
 
@@ -42,15 +42,13 @@ class Player(pygame.sprite.Sprite):
 
         # mouvement du joueur
         self.on_ground = False
-        
         self.obstacles = []
+        self.void = []
+        self.finish = []
         self.vel = Vector2(0, 0)
-    
         self.rect.topleft = (x, y)
-        
         self.acc = Vector2(0, 0)
         self.jumping = False
-        
         
         # interaction du joueur
         self.is_riding = False
@@ -59,11 +57,11 @@ class Player(pygame.sprite.Sprite):
         """actualisation du joueur"""
         self.handle_input()
         self.move()
-        
+        if self.detect_collision(self, self.void):
+            self.is_dead = True
+            
     def move(self):
         """gestion des deplacements"""
-        #self.acc = Vector2(0,-GRAVITY if self.hits else GRAVITY)
-
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
         self.acc = Vector2(0,GRAVITY)
@@ -80,7 +78,9 @@ class Player(pygame.sprite.Sprite):
         
         self.check_collisions(0, self.vel.y)
         self.image = self.animation.animate(self.state)
-        
+    def detect_collision(self,player, group):
+        collisions = pygame.sprite.spritecollide(player, group, False)
+        return collisions
     def check_collisions(self, dx, dy):
         for obstacle in self.obstacles:
             if self.rect.colliderect(obstacle.rect):
@@ -94,21 +94,20 @@ class Player(pygame.sprite.Sprite):
                     self.rect.bottom = obstacle.rect.top
                     self.on_ground = True
                     self.vel.y = 0
+                    self.jumping = False
                 if dy < 0:
                     self.rect.top = obstacle.rect.bottom
                     self.vel.y = 0
             
     def jump(self):
         """gestion du saut et du double saut"""
-        if not self.jumping : 
+        if self.on_ground:
             self.vel.y = -self.jump_value
-        """if self.double_jump:
+            self.jumping = True
+        elif self.double_jump and not self.jumping:
             self.vel.y = -self.jump_value
             self.double_jump = False
-        else:
-            self.vel.y = -15
-            self.double_jump = True"""
-        self.jumping = False
+            self.jumping = True
 
     def attack(self):
         """gestion des attack"""
@@ -182,4 +181,5 @@ class Player(pygame.sprite.Sprite):
                 self.state = 'idle_' + self.last_direction
         if pressed_keys[K_SPACE]:
             self.state = 'jump_'+ self.last_direction
+            self.jumping = True
             self.jump()

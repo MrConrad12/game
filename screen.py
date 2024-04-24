@@ -21,13 +21,15 @@ class MenuGame:
         self.play_button = AnimatedButton(self.game, f'{BUTTON_PATH}cadre.png', width = 80, height = 50, posY=HEIGHT - 120)
                 
         # bouton pour le personnage
-        self.change_right_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_right.png', 80,posX=SELECTABLE_PLAYER_POS_X + 45, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
-        self.change_left_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_left.png', 80,posX=SELECTABLE_PLAYER_POS_X - 160, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
+        #self.change_right_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_right.png', 80,posX=SELECTABLE_PLAYER_POS_X + 45, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
+        #self.change_left_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_left.png', 80,posX=SELECTABLE_PLAYER_POS_X - 160, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
         
         # statistiques
         self.player_stat_data = [f"Live:  {player.lives}", f"Speed: {player.speed}", f"Damage: {player.damage}", f"+ {player.aptitude}"]
         self.player_stat = ImageWithTextGroup(self.game.screen, 'panneau0.png', self.player_stat_data,(SELECTABLE_PLAYER_POS_X,  SELECTABLE_PLAYER_POS_Y * 2.6), resizing=True, size=(220,200))
         self.image = ImageWithText(self.game.screen,'cadre.png', f"{player.name}", (SELECTABLE_PLAYER_POS_X,  SELECTABLE_PLAYER_POS_Y * 1.8), True, (200, 80), font_size=36)
+        self.win_button = ImageWithText(self.game.screen,'cadre.png', "WIN", (WIDTH // 2,  HEIGHT //3), True, (200, 80), font_size=36)
+        self.lose_button = ImageWithText(self.game.screen,'cadre.png', "LOSE", (WIDTH // 2,  HEIGHT //3), True, (200, 80), font_size=36)
         self.play_button = ImageWithText(self.game.screen,'cadre.png',"PLAY", (WIDTH // 2,  HEIGHT - 50), True, (200, 80), font_size=36)
         self.player = SelectablePlayer(image="assets/selectable_player/player1")
         
@@ -43,11 +45,11 @@ class MenuGame:
         for i,(level_name, level_data) in enumerate(LEVELS.items()):
             image = level_data['image']
             path = level_data['path']
-            row = i // 3  
-            col = i % 3  
+            row = i // 2 
+            col = i % 2 
             x = (col * x_spacing) - 20
             y = (row * y_spacing) - 20
-            levels[level_name] = AnimatedCard(self.game, image, CARD_SIZE,posX=x, posY=y, offsetX=0, offsetY=0)
+            levels[level_name] = AnimatedCard(self.game, image, CARD_SIZE,posX=x + 100, posY=y, offsetX=0, offsetY=0)
         return levels
 
     def draw_image_button(self, image_src, offsetX = 0, offsetY = 0, posX = WIDTH // 2, posY = HEIGHT //2):
@@ -67,6 +69,10 @@ class MenuGame:
     def draw_start_menu(self):
         """dessine le menu principal avec ces composants"""
         self.game.screen.blit(self.game.background, (0, -200))
+        if self.game.win:
+            self.win_button.draw()
+        else:
+            self.lose_button.draw()
         self.game.screen.blit(self.start_button['image'], self.start_button['rect'])
         self.game.screen.blit(self.exit_button['image'], self.exit_button['rect'])
         pygame.display.update()
@@ -78,8 +84,8 @@ class MenuGame:
             self.levels[level].update()
         self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
         self.game.screen.blit(self.player.image, self.player.rect)
-        self.change_right_player.update()
-        self.change_left_player.update()
+        #self.change_right_player.update()
+        #self.change_left_player.update()
         self.image.draw()
         self.play_button.draw()
         self.player_stat.draw()
@@ -106,9 +112,11 @@ class MenuGame:
             self.choose_level(mouse_pos)
             if self.play_button.rect.collidepoint(mouse_pos):
                 self.game.current_map = MapManager(self.game)
+                self.game.timer.current_duration = 60
                 self.game.current_map.load_map( self.level_selected, LEVELS[self.level_selected]['path'])
                 self.game.audio_manager.load_bgm_game()
                 self.game.game_state = GAME
+        
         
     def choose_level(self,mouse_pos):
         mouse_pos = pygame.mouse.get_pos()
@@ -117,9 +125,6 @@ class MenuGame:
                 self.level_selected = level
                 #self.levels[button].isSelected = True
                 self.game.audio_manager.play_sound('forward_effect')
-                print(level)
-                button.isSelected = True
-                
-                #self.level[bouton].isSelected = False
+                button.isSelected = True                
             else:
                 button.isSelected = False

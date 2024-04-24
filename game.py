@@ -5,6 +5,8 @@ from player import Player
 from screen import MenuGame
 from audio_manager import AudioManager
 from pygame.mixer import *
+
+from timer_manager import GameTimer, TimeManager
 pygame.mixer.init()
 class Game:
     def __init__(self):
@@ -19,12 +21,15 @@ class Game:
         self.welcome_background = pygame.image.load('assets/decoration/fond2.jpg')
         self.welcome_background = pygame.transform.scale(self.welcome_background, (WIDTH, HEIGHT *1.4))
         
-        
-        self.game_state = START_MENU        
+        self.game_state = START_MENU       
+        self.win = True
+         
         self.current_map = MapManager(self)
         self.audio_manager = AudioManager(self)
         self.current_map.load_map( 'map', 'map/forest_map/forest_map.tmx')
         self.menu = MenuGame(self)
+        self.play_time = 180
+        self.timer = GameTimer(self.play_time)
         
 
     def handle_events(self):
@@ -36,10 +41,15 @@ class Game:
                 self.menu.handle_button_clicks(mouse_pos)
            
     def run_game(self):
-        """charge le jeu (avec la map)"""        
+        """charge le jeu (avec la map)"""      
         self.current_map.update()
         if self.game_state == GAME:
+            self.timer.update()
+            self.timer.draw(self.screen, (WIDTH // 2, 20))
             self.screen.blit(self.menu.home_button['image'], self.menu.home_button['rect'])
+        if self.timer.current_seconds <= 0:
+            self.game_state = START_MENU
+            
         pygame.display.update()
         self.clock.tick(FPS)
 

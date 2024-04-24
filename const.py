@@ -20,7 +20,7 @@ PLAYER_DATA = {
         'lives': 3,
         'damage': 3,
         'speed': 1,
-        'jump': 10,
+        'jump': 40,
         'aptitude': 'None'
     },
     'player2':{
@@ -45,8 +45,10 @@ PLAYER_DATA = {
         'aptitude': 'swim'
     }
 }
-BUTTON_PATH = "assets/bouton/"
 
+RUSH_GAME = "rush"
+BUTTON_PATH = "assets/bouton/"
+FINISH_GAME = "finish_game"
 LEVELS = {
     'Whispering Woods': {
         'image': f'{BUTTON_PATH}5.png',
@@ -54,7 +56,7 @@ LEVELS = {
     },
     'Coral Reef': {
         'image': f'{BUTTON_PATH}3.png',
-        'path': 'map/forest_map/forest_map.tmx'
+        'path': 'map/ocean_map/ocean_map0.tmx'
     },
     'Skyfall Peaks': {
         'image': f'{BUTTON_PATH}4.png',
@@ -64,12 +66,4 @@ LEVELS = {
         'image': f'{BUTTON_PATH}2.png',
         'path': 'map/map_industrie/map_industrie.tmx'
     },
-    'Forgotten Tower': {
-        'image': f'{BUTTON_PATH}1.png',
-        'path': 'map/forest_map/forest_map.tmx'
-    },
-    'Rush mode': {
-        'image': f'{BUTTON_PATH}6.png',
-        'path': 'None'
-    }
 }

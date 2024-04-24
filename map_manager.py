@@ -5,6 +5,7 @@ import pyscroll
 from const import *
 from enemy import Enemy
 from player import Player
+from timer_manager import GameTimer, TimeManager
 
 class MapManager:
     def __init__(self, game, map_game='map', path_map= 'map/forest_map/forest_map.tmx'):
@@ -14,18 +15,20 @@ class MapManager:
         
         self.game = game
         self.player = None
-        self.enemies = []
+        self.enemies = pygame.sprite.Group()
         
         self.group = None
         self.collisions = pygame.sprite.Group()
-        self.void = []
+        self.void = pygame.sprite.Group()
+        self.finish = pygame.sprite.Group()
         self.tmx_data = None
-        
+        self.timer=None
+
     def load_map(self, map_game, path_map):
         # load map
         self.map = map_game
         self.map_path = path_map
-        
+        self.timer = GameTimer(2*100)
         
         self.tmx_data = pytmx.util_pygame.load_pygame(self.map_path)
         map_data = pyscroll.data.TiledMapData(self.tmx_data)
@@ -40,11 +43,14 @@ class MapManager:
         
         self.player = Player(self, player_pos.x, player_pos.y)
         self.player.obstacles = self.collisions.copy()
+        self.player.void = self.void.copy()
+        self.player.finish = self.finish.copy()
         
         ## add player
         for obj in self.tmx_data.objects:
             if obj.type == 'enemy':
                 enemy = Enemy(self.game, self.player, obj.x, obj.y)
+                self.enemies.add(enemy)
                 enemy.obstacles = self.collisions.copy()
                 self.group.add(enemy)
 
@@ -54,7 +60,9 @@ class MapManager:
         # recoit les collision
         self.load_element("collision", self.collisions)
         self.load_element("void", self.void)
-            
+        self.load_element("finish", self.finish)
+        
+    
     def load_element(self, type, element_liste):
         for obj in self.tmx_data.objects:
             if obj.type == type:
@@ -62,7 +70,16 @@ class MapManager:
                 obstacle.rect = pygame.Rect(obj.x, obj.y, obj.width, obj.height)  # Définir le rectangle de collision
                 element_liste.add(obstacle) 
     def update(self):
+        self.timer.update()
+        self.timer.draw(self.game.screen, (WIDTH // 2, 30))  
         self.group.update()
         self.group.center(self.player.rect.center)
         self.group.draw(self.game.screen)
         
+        if pygame.sprite.spritecollideany(self.player, self.enemies) or pygame.sprite.spritecollideany(self.player, self.void):
+            self.game.win = False
+            self.game.game_state = START_MENU
+        if pygame.sprite.spritecollideany(self.player, self.finish):
+            self.game.win = True
+            self.game.game_state = START_MENU
+
