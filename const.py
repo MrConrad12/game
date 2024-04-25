@@ -1,3 +1,6 @@
+import pygame
+
+
 HEIGHT = 700
 WIDTH = 1280
 ACC = 0.5

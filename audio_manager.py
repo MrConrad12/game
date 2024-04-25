@@ -9,14 +9,15 @@ class AudioManager:
         pygame.mixer.init()
         self.sfx_volume  = 0.4
         self.music_volume  = 0.4
-        self.sound_effects = self.load_sound_effects()    
         self.bgm_menu = f"{BGM_PATH}menu_01.ogg"
         self.bgm_game = f"{BGM_PATH}game_01.mp3"
         
-        #initialise les librairies musicales
-        pygame.mixer.init()
+        self.sound_effects = self.load_sound_effects()    
+
+        
         
     def load_sound_effects(self):
+        
         sound_effects = {
             "forward_effect": pygame.mixer.Sound(f"{EFFECT_SOUND}forward_effect.ogg"),
             "backward_effect": pygame.mixer.Sound(f"{EFFECT_SOUND}backward_effect.ogg"),

@@ -3,16 +3,16 @@ from pygame.locals import *
 from pygame.math import Vector2
 from pygame.sprite import AbstractGroup
 from animation import Animation
-from const import ACC, FRIC, GRAVITY, PLAYER_DATA, START_MENU
+from const import FRIC, GRAVITY, PLAYER_DATA
+from game_entity import GameEntity
 from melee import Melee
 from projectile import Projectile
 
-
-class Player(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
+class Player(GameEntity):
+    def __init__(self, map, x, y):
         super().__init__()
         self.double_jump = False
-        self.game = game
+        self.map = map
         
         # stat du joueur
         self.name = 'player1'
@@ -22,20 +22,25 @@ class Player(pygame.sprite.Sprite):
         self.speed = self.current_player['speed']
         self.jump_value = self.current_player['jump']
         self.aptitude = self.current_player['aptitude']
+
     
-        # etat du joueur
+        # stat du joueur
         self.current_lives = self.lives
         self.current_attacks = self.damage
-        self.is_dead = True
+        self.projectile_amount = 100
+        self.projectile_delay = 40
+        self.projectile_counter = 20
+        self.launch_speed = 5
+        self.is_dead = False
         
         # equipement du joueur
         self.all_projectiles = pygame.sprite.Group()
         self.all_melee = pygame.sprite.Group()
 
-        
         # l'animation du joueur
         self.states = ['idle','walk','jump','run','walk+attack',]
-        self.animation = Animation('player', self.states, 'idle_right')
+        self.animation_speed = 1
+        self.animation = Animation('player', self.states, 'idle_right', animation_speed=self.animation_speed)
         self.state = 'idle_right'
         self.last_direction = 'right'
         self.image = self.animation.image
@@ -43,9 +48,6 @@ class Player(pygame.sprite.Sprite):
 
         # mouvement du joueur
         self.on_ground = False
-        self.obstacles = []
-        self.void = []
-        self.finish = []
         self.vel = Vector2(0, 0)
         self.rect.topleft = (x, y)
         self.acc = Vector2(0, 0)
@@ -58,7 +60,8 @@ class Player(pygame.sprite.Sprite):
         """actualisation du joueur"""
         self.handle_input()
         self.move()
-        if self.detect_collision(self.void):
+        self.manage_world_contact(self.map.collisions)
+        if self.detect_collision(self.map.void):
             self.is_dead = True
             
     def move(self):
@@ -68,41 +71,7 @@ class Player(pygame.sprite.Sprite):
         self.acc = Vector2(0,GRAVITY)
         self.acc.x += self.vel.x * FRIC
         self.vel += self.acc
-        
-        self.rect.x += self.vel.x + 0.5 * self.acc.x
-        # Vérifier les collisions horizontales
-        self.manage_collisions(self.vel.x, 0)
-         # Appliquer les déplacements verticaux
-        self.rect.y += self.vel.y + 0.5 * self.acc.y
-        # Vérifier les collisions verticales
-        self.on_ground = False
-        
-        self.manage_collisions(0, self.vel.y)
         self.image = self.animation.animate(self.state)
-        
-    def detect_collision(self, group):
-        """ detecte la collision avec les autres entités"""
-        collisions = pygame.sprite.spritecollide(self, group, False)
-        return collisions
-    
-    def manage_collisions(self, dx, dy):
-        """ gere la collision avec les obstacles """
-        for obstacle in self.obstacles:
-            if self.rect.colliderect(obstacle.rect):
-                # Collision horizontale
-                if dx > 0:
-                    self.rect.right = obstacle.rect.left
-                if dx < 0:
-                    self.rect.left = obstacle.rect.right
-                # Collision verticale
-                if dy > 0:
-                    self.rect.bottom = obstacle.rect.top
-                    self.on_ground = True
-                    self.vel.y = 0
-                    self.jumping = False
-                if dy < 0:
-                    self.rect.top = obstacle.rect.bottom
-                    self.vel.y = 0
             
     def jump(self):
         """gestion du saut et du double saut"""
@@ -120,10 +89,7 @@ class Player(pygame.sprite.Sprite):
             self.state = 'walk+attack_right'
         else:
             self.state = 'walk+attack_left'
-        self.launch_projectile()
-            
-    def launch_projectile(self):
-        self.all_projectiles.add(Projectile(self))
+        
                 
     def ride(self, obj):
         """monter sur une monture"""
@@ -147,13 +113,17 @@ class Player(pygame.sprite.Sprite):
             self.current_lives += 1
     
     def launch_projectile(self):
-        if(self.current_attacks > 0):
-            self.all_projectiles.add(Projectile(self))
-            self.current_attacks -= 1
+        self.animation.animation_speed = 3.5
+        self.projectile_counter += 1
+        if self.projectile_counter % self.projectile_delay == 0:
+            if(self.projectile_amount > 0):
+                self.map.group.add(Projectile(self.map,self,self.last_direction))
+                self.projectile_amount -= 1
+            self.projectile_counter = 0
     
     def get_projectile(self):
-        if(self.current_attacks<=self.attack):
-            self.current_attacks += 1
+        if(self.projectile_amount<=self.attack):
+            self.projectile_amount += 1
             
     def launch_melee(self):
         self.all_melee.add(Melee(self))
@@ -179,6 +149,7 @@ class Player(pygame.sprite.Sprite):
                 self.last_direction = 'right'
         elif pressed_keys[K_UP]:
             self.attack()
+            self.launch_projectile()
         else:
             if self.jumping:
                 self.state = 'jump_' + self.last_direction
@@ -188,3 +159,4 @@ class Player(pygame.sprite.Sprite):
             self.state = 'jump_'+ self.last_direction
             self.jumping = True
             self.jump()
+        self.animation.animation_speed = 1

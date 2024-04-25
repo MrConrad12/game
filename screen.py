@@ -10,7 +10,13 @@ class ScreenGame:
     def __init__(self, game):
         self.game = game
         self.level_selected = "Whispering Woods"
-        player = game.current_map.player
+        player = game.map.player
+        
+        # charger les images de fond pour les menus
+        self.background = pygame.image.load('assets/decoration/fond1.jpg')
+        self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT *1.4))
+        self.welcome_background = pygame.image.load('assets/decoration/fond2.jpg')
+        self.welcome_background = pygame.transform.scale(self.welcome_background, (WIDTH, HEIGHT *1.4))
         
         # bouton pour le menu prinipale
         self.start_button = self.draw_image_button(f'bouton.png')
@@ -61,18 +67,17 @@ class ScreenGame:
         rect.centery = posY + offsetY
         return {'image':image, 'rect':rect}
 
+
     def draw_welcome_page(self):
         """menu d'acceuil"""
-        background = pygame.image.load('assets/decoration/fond2.jpg')
-        background = pygame.transform.scale(background, (WIDTH, HEIGHT *1.4))
-        self.game.screen.blit(self.game.welcome_background, (0, -200))
+        self.game.screen.blit(self.welcome_background, (0, -200))
         pygame.time.delay(1000)  
         self.game.audio_manager.load_bgm_menu()
         pygame.display.update()
 
     def draw_start_menu(self):
         """dessine le menu principal avec ces composants"""
-        self.game.screen.blit(self.game.background, (0, -200))
+        self.game.screen.blit(self.background, (0, -200))
         if self.game.win:
             self.win_button.draw()
         else:
@@ -83,13 +88,13 @@ class ScreenGame:
    
     def draw_level_menu(self):
         """menu de niveau selection de personnage et de niveau"""
-        self.game.screen.blit(self.game.background, (0, -200))
+        self.game.screen.blit(self.background, (0, -200))
         for level in self.levels:
             self.levels[level].update()
         self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
         self.game.screen.blit(self.player.image, self.player.rect)
-        #self.change_right_player.update()
-        #self.change_left_player.update()
+        self.change_right_player.update()
+        self.change_left_player.update()
         self.image.draw()
         self.play_button.draw()
         self.player_stat.draw()
@@ -122,9 +127,8 @@ class ScreenGame:
         if self.game.game_state == LEVEL:
             self.choose_level(mouse_pos)
             if self.play_button.rect.collidepoint(mouse_pos):
-                self.game.current_map = MapManager(self.game)
-                self.game.timer.current_duration = 60
-                self.game.current_map.load_map( self.level_selected, LEVELS[self.level_selected]['path'])
+                self.game.map = MapManager(self.game)
+                self.game.map.load_map( self.level_selected, LEVELS[self.level_selected]['path'])
                 self.game.audio_manager.load_bgm_game()
                 self.game.timer.reset()
                 self.game.game_state = GAME

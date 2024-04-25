@@ -46,6 +46,7 @@ class Animation:
             self.image = self.get_sprites(state)[self.current_sprite]
             self.sprite_counter = 0
         return self.image
+    
     def get_sprites(self, state):
         """ recuperer les sprites """
         return self.sprite_dic[state]
@@ -81,9 +82,9 @@ class AnimatedCard:
         self.rect = self.image.get_rect(center=self.rect.center)
         self.game.screen.blit(self.image, self.rect)
 
+
 class AnimatedButton:
     def __init__(self, game, image_path, width, height, add_size=20, offsetX=50, offsetY=50, posX=WIDTH // 2, posY=HEIGHT // 2):
-    
         self.game = game
         self.isSelected = False
         self.original_image = pygame.image.load(image_path)
