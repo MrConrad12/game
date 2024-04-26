@@ -1,11 +1,16 @@
 import random
 import pygame
 
-class Item(pygame.sprite.Sprite):
-    def __init__(self, player, image):
+from game_entity import GameEntity
+
+class Item(GameEntity):
+    def __init__(self, player, x, y, image):
         super().__init__()
         self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image,(32,32))
         self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
         self.float_speed = random.choice([1, -1]) 
         self.player = player
         self.float_range = 5  
@@ -13,7 +18,6 @@ class Item(pygame.sprite.Sprite):
 
     def update(self):
         self.animation()
-        pygame.sprite.spritecollide(self.player, self, True)
         
     def animation(self):
         '''Animation de flottement'''

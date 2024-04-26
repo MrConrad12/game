@@ -17,11 +17,14 @@ class Enemy(GameEntity):
         self.distance = 200
         
         self.player = player
-        self.states = ['walk','attack']
+        self.states = ['walk','attack', 'hurt']
         self.name = 'enemy'
         self.state = 'walk_right'
         self.animation = Animation(self.name, self.states, 'walk_right', animation_speed=.6)
         self.animation.path = "../assets/enemy"
+        
+        self.death_counter = 0
+        self.death_delay = 50
         
         self.map = map
         self.image = self.animation.image
@@ -32,6 +35,7 @@ class Enemy(GameEntity):
         self.obstacles = []
         self.vel = pygame.Vector2(0, 0)
         self.acc = pygame.Vector2(0,0)
+        self.is_dead = False
 
         self.loot_amount = 10
         self.direction = 1
@@ -48,14 +52,21 @@ class Enemy(GameEntity):
     def set_loot_amount(self, amount):
         self.loot_amount = amount
 
-
     def set_player(self, player):
         self.player = player
 
     def update(self):
+        if self.is_dead:
+            self.death()
         self.move()
         self.manage_world_contact(self.map.collisions)
         
+    def death(self):
+        self.death_counter += 1
+        self.state = 'hurt_right'
+        if self.death_counter % self.death_delay == 0:
+            self.kill()
+            
     def move(self):
         self.acc = pygame.Vector2(0,GRAVITY)
         self.vel += self.acc

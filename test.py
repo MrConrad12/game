@@ -77,6 +77,14 @@ WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Jeu avec Pygame")
 
+
+
+###################################
+# ENEMIES ATTACK
+###################################
+
+
+
 # Classe pour le joueur
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -159,7 +167,7 @@ for _ in range(5):
 clock = pygame.time.Clock()
 counter = 0
 # Boucle de jeu
-"""running = True
+running = True
 while running:
     counter += 1
     # Limite de rafraîchissement de l'écran
@@ -203,10 +211,10 @@ while running:
 
 # Fermeture de Pygame
 pygame.quit()
-"""
-import pygame
-import random
 
+###################################
+# KILL ENEMIES
+###################################
 # Initialisation de Pygame
 pygame.init()
 
@@ -291,9 +299,9 @@ for _ in range(100):
 
 # Horloge pour gérer la vitesse de rafraîchissement de l'écran
 clock = pygame.time.Clock()
-'''
+
 # Boucle de jeu
-running = True
+"""running = True
 while running:
     # Limite de rafraîchissement de l'écran
     clock.tick(60)
@@ -335,8 +343,10 @@ while running:
 
 # Fermeture de Pygame
 pygame.quit()
-'''
-import pygame
+
+
+"""
+"""import pygame
 import numpy as np
 
 # Initialisation de Pygame
@@ -408,3 +418,4 @@ while running:
 
 # Fermeture de Pygame
 pygame.quit()
+"""

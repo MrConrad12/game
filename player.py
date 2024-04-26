@@ -22,23 +22,31 @@ class Player(GameEntity):
         self.speed = self.current_player['speed']
         self.jump_value = self.current_player['jump']
         self.aptitude = self.current_player['aptitude']
-
     
         # stat du joueur
         self.current_lives = self.lives
         self.current_attacks = self.damage
-        self.projectile_amount = 100
+        
+        self.projectile_amount = 5
         self.projectile_delay = 40
         self.projectile_counter = 20
+        
+        self.damage_delay = 40
+        self.damage_counter = 20
         self.launch_speed = 5
+        
+        self.regeneration_delay = 300
+        self.regeneration_counter = 0
+        
         self.is_dead = False
+        self.is_hit = False
         
         # equipement du joueur
         self.all_projectiles = pygame.sprite.Group()
         self.all_melee = pygame.sprite.Group()
 
         # l'animation du joueur
-        self.states = ['idle','walk','jump','run','walk+attack',]
+        self.states = ['idle','walk','jump','run','walk+attack','hurt']
         self.animation_speed = 1
         self.animation = Animation('player', self.states, 'idle_right', animation_speed=self.animation_speed)
         self.state = 'idle_right'
@@ -63,7 +71,27 @@ class Player(GameEntity):
         self.manage_world_contact(self.map.collisions)
         if self.detect_collision(self.map.void):
             self.is_dead = True
-            
+        for item in self.check_collision(self, self.map.items):
+            if (self.projectile_amount<5):
+                item.kill()
+                self.get_projectile()
+                
+        if self.current_lives < self.lives:
+            self.regeneration_counter += 1
+            if self.regeneration_counter % self.regeneration_delay == 0:
+                self.get_live()
+                self.regeneration_counter = 0
+        hits = pygame.sprite.spritecollide(self, self.map.enemies, False)
+        
+        for enemy in hits:
+            # Si le joueur saute sur l'ennemi
+            if self.vel.y > 0 and self.rect.bottom < enemy.rect.bottom and not enemy.is_dead:
+                self.jump_bounce()
+                enemy.is_dead = True
+                
+    def check_collision(self, sprite, group):
+        return pygame.sprite.spritecollide(sprite, group, False, pygame.sprite.collide_mask)
+    
     def move(self):
         """gestion des deplacements"""
         self.acc.x += self.vel.x * FRIC
@@ -75,6 +103,8 @@ class Player(GameEntity):
             
     def jump(self):
         """gestion du saut et du double saut"""
+        self.state = 'jump_'+ self.last_direction
+        self.jumping = True
         if self.on_ground:
             self.vel.y = -self.jump_value
             self.jumping = True
@@ -83,13 +113,12 @@ class Player(GameEntity):
             self.double_jump = False
             self.jumping = True
 
+    def jump_bounce(self):
+        self.vel.y = -self.jump_value
+        self.jumping = True
     def attack(self):
         """gestion des attack"""
-        if self.last_direction == 'right':
-            self.state = 'walk+attack_right'
-        else:
-            self.state = 'walk+attack_left'
-        
+        self.state = 'walk+attack_'+self.last_direction
                 
     def ride(self, obj):
         """monter sur une monture"""
@@ -103,10 +132,15 @@ class Player(GameEntity):
         self.is_riding = False
         
     def get_damage(self):
-        if(self.current_lives > 0):
-            self.current_lives -= 1
-        else:
-            self.is_dead = True
+        self.state = 'hurt_' + self.last_direction
+        self.damage_counter +=1
+        self.rect.x -= 1
+        if self.damage_counter % self.damage_delay == 0:
+            if self.current_lives > 0:
+                self.current_lives -= 1
+            else:
+                self.is_dead = True
+            self.damage_counter = 0
     
     def get_live(self):
         if(self.current_lives <= self.lives):
@@ -122,8 +156,7 @@ class Player(GameEntity):
             self.projectile_counter = 0
     
     def get_projectile(self):
-        if(self.projectile_amount<=self.attack):
-            self.projectile_amount += 1
+        self.projectile_amount += 1
             
     def launch_melee(self):
         self.all_melee.add(Melee(self))
@@ -156,7 +189,7 @@ class Player(GameEntity):
             else:
                 self.state = 'idle_' + self.last_direction
         if pressed_keys[K_SPACE]:
-            self.state = 'jump_'+ self.last_direction
-            self.jumping = True
             self.jump()
+        if self.is_hit:
+            self.get_damage()
         self.animation.animation_speed = 1

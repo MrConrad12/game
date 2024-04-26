@@ -1,7 +1,6 @@
 import pygame
 from const import *
 from map_manager import MapManager
-from player import Player
 from screen import ScreenGame
 from audio_manager import AudioManager
 from pygame.mixer import *

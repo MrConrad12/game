@@ -10,7 +10,7 @@ class ScreenGame:
     def __init__(self, game):
         self.game = game
         self.level_selected = "Whispering Woods"
-        player = game.map.player
+        self.player = game.map.player
         
         # charger les images de fond pour les menus
         self.background = pygame.image.load('assets/decoration/fond1.jpg')
@@ -22,6 +22,8 @@ class ScreenGame:
         self.start_button = self.draw_image_button(f'bouton.png')
         self.exit_button = self.draw_image_button(f'exit_button.png', offsetY = 80)
         self.home_button = self.draw_image_button(f'home_button.png', posX = WIDTH - 60, posY= 60 )
+        self.restart_button = self.draw_image_button(f'restart0.png', posX = WIDTH - 60, posY= 60 )
+        self.quit_game_button = self.draw_image_button(f'quit0.png', posX = WIDTH - 60, posY= 60 )
         
         # bouton pour les niveaux
         self.levels = self.load_level_boutton()
@@ -32,13 +34,16 @@ class ScreenGame:
         self.change_left_player = AnimatedCard(self.game, f'{BUTTON_PATH}next_left.png', 80,posX=SELECTABLE_PLAYER_POS_X - 160, posY=SELECTABLE_PLAYER_POS_Y - 25, add_size=5)
         
         # statistiques
-        self.player_stat_data = [f"Live:  {player.lives}", f"Speed: {player.speed}", f"Damage: {player.damage}", f"+ {player.aptitude}"]
+        self.player_stat_data = [f"Live:  { self.player.lives}", f"Speed: { self.player.speed}", f"Damage: { self.player.damage}", f"+ {self.player.aptitude}"]
         self.player_stat = ImageWithTextGroup(self.game.screen, 'panneau0.png', self.player_stat_data,(SELECTABLE_PLAYER_POS_X,  SELECTABLE_PLAYER_POS_Y * 2.6), resizing=True, size=(220,200))
-        self.image = ImageWithText(self.game.screen,'cadre.png', f"{player.name}", (SELECTABLE_PLAYER_POS_X,  SELECTABLE_PLAYER_POS_Y * 1.8), True, (200, 80), font_size=36)
+        self.image = ImageWithText(self.game.screen,'cadre.png', f"{ self.player.name}", (SELECTABLE_PLAYER_POS_X,  SELECTABLE_PLAYER_POS_Y * 1.8), True, (200, 80), font_size=36)
         self.win_button = ImageWithText(self.game.screen,'cadre.png', "WIN", (WIDTH // 2,  HEIGHT //3), True, (200, 80), font_size=36)
         self.lose_button = ImageWithText(self.game.screen,'cadre.png', "LOSE", (WIDTH // 2,  HEIGHT //3), True, (200, 80), font_size=36)
         self.play_button = ImageWithText(self.game.screen,'cadre.png',"PLAY", (WIDTH // 2,  HEIGHT - 50), True, (200, 80), font_size=36)
         self.player = SelectablePlayer(image="assets/selectable_player/player1")
+        
+        self.stat_life = GroupImage(self.game.screen,  self.game.map.player.current_lives, "assets/items/heart.png")
+        self.stat_weapons = GroupImage(self.game.screen,  self.game.map.player.projectile_amount, "assets/items/weapons.png", posY= 80)
         
         self.choose = False
         
@@ -105,9 +110,15 @@ class ScreenGame:
         self.game.timer.update()
         self.game.timer.draw(self.game.screen, (WIDTH // 2, 20))
         self.game.screen.blit(self.home_button['image'], self.home_button['rect'])
+        self.stat_life.update(self.game.map.player.current_lives)
+        self.stat_weapons.update(self.game.map.player.projectile_amount)
         if self.game.timer.current_seconds <= 0:
             self.game_state = START_MENU
 
+    def draw_restart(self):
+        self.game.screen.blit(self.quit_game_button['image'], self.quit_game_button['rect'])
+        self.game.screen.blit(self.restart_button['image'], self.restart_button['rect'])
+        
     def handle_button_clicks(self, mouse_pos):
         """ gestion des clique de souris """
         if self.game.game_state == START_MENU:
@@ -127,12 +138,14 @@ class ScreenGame:
         if self.game.game_state == LEVEL:
             self.choose_level(mouse_pos)
             if self.play_button.rect.collidepoint(mouse_pos):
-                self.game.map = MapManager(self.game)
-                self.game.map.load_map( self.level_selected, LEVELS[self.level_selected]['path'])
-                self.game.audio_manager.load_bgm_game()
-                self.game.timer.reset()
-                self.game.game_state = GAME
+                self.load_game()
         
+    def load_game(self):
+        self.game.map = MapManager(self.game)
+        self.game.map.load_map( self.level_selected, LEVELS[self.level_selected]['path'])
+        self.game.audio_manager.load_bgm_game()
+        self.game.timer.reset()
+        self.game.game_state = GAME
         
     def choose_level(self,mouse_pos):
         mouse_pos = pygame.mouse.get_pos()
@@ -144,3 +157,25 @@ class ScreenGame:
                 button.isSelected = True                
             else:
                 button.isSelected = False
+
+
+class GroupImage:
+    def __init__(self, screen, current_stat,  image_full, posX = 20, posY = 20):
+        self.screen = screen
+        self.posX = posX
+        self.posY = posY
+        self.current_stat = current_stat
+        self.image_full = pygame.image.load(image_full)
+        self.image_full = pygame.transform.scale(self.image_full, (40,40))
+        self.image_full_rect =  self.image_full.get_rect()
+        """
+        self.image_empty = pygame.image.load(image_empty)
+        self.image_empty = pygame.transform.scale(self.image, self.rect)
+        self.image_empty_rect =  self.image.get_rect()
+        """
+        
+    def update(self, current_stat):
+        for i in range(current_stat):
+            self.image_full_rect.x = i * 60 + self.posX
+            self.image_full_rect.y = self.posY
+            self.screen.blit(self.image_full, self.image_full_rect)

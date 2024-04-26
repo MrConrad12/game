@@ -1,10 +1,13 @@
+import math
 import sys
 import pygame
 import pytmx
 import pyscroll
 from const import *
 from enemy import Enemy
+from item import Item
 from player import Player
+from projectile import Projectile
 
 class MapManager:
     def __init__(self, game, map_game='map', path_map= 'map/forest_map/forest_map.tmx'):
@@ -15,6 +18,7 @@ class MapManager:
         self.game = game
         self.player = None
         self.enemies = pygame.sprite.Group()
+        self.items = pygame.sprite.Group()
         self.group = None
         
         self.collisions = pygame.sprite.Group()
@@ -45,6 +49,11 @@ class MapManager:
                 enemy = Enemy(self, self.player, obj.x, obj.y)
                 self.enemies.add(enemy)
                 self.group.add(enemy)
+            if obj.type == "item":
+                item = Item(self.player, obj.x, obj.y, 'assets/items/weapons.png')
+                self.items.add(item)
+                self.group.add(item)
+                
         self.group.add(self.player)
         
     def load_map_element(self):
@@ -63,10 +72,12 @@ class MapManager:
         self.group.update()
         self.group.center(self.player.rect.center)
         self.group.draw(self.game.screen)
-        if pygame.sprite.spritecollideany(self.player, self.enemies) or pygame.sprite.spritecollideany(self.player, self.void):
+        self.player.is_hit = pygame.sprite.spritecollideany(self.player, self.enemies)
+        if pygame.sprite.spritecollideany(self.player, self.void) or self.player.is_dead:
             self.game.win = False
             self.game.game_state = START_MENU
         if pygame.sprite.spritecollideany(self.player, self.finish):
             self.game.win = True
             self.game.game_state = START_MENU
+        
 
